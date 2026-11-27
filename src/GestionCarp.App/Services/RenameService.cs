@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Rename;
 
 namespace GestionCarp.App.Services;
@@ -26,8 +27,8 @@ public sealed class RenameService
     public bool CanUndo => History.CanUndo;
 
     public string UndoDescription => History.Last is { } last
-        ? $"Deshacer «{last.Description}» ({last.Timestamp:dd/MM HH:mm})"
-        : "No hay nada que deshacer";
+        ? L.F("svc_undo", last.Description, last.Timestamp.ToString("g", Loc.Current.Culture))
+        : L.T("hist_empty");
 
     public RenameResult Execute(IReadOnlyList<RenameOperation> operations, string description)
     {

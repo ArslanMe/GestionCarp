@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using System.Globalization;
 
 namespace GestionCarp.Core.Rename.Rules;
@@ -17,16 +18,16 @@ public sealed class CaseRule : RenameRule
 {
     private CaseMode _mode = CaseMode.Title;
 
-    public override string DisplayName => "Mayúsculas";
+    public override string DisplayName => L.T("rule_case");
 
     public CaseMode Mode { get => _mode; set => SetProperty(ref _mode, value); }
 
     public override string Summary => Mode switch
     {
-        CaseMode.Lower => "todo en minúsculas",
-        CaseMode.Upper => "TODO EN MAYÚSCULAS",
-        CaseMode.Sentence => "Tipo oración",
-        _ => "Tipo Título",
+        CaseMode.Lower => L.T("case_sum_lower"),
+        CaseMode.Upper => L.T("case_sum_upper"),
+        CaseMode.Sentence => L.T("case_sum_sentence"),
+        _ => L.T("case_sum_title"),
     };
 
     protected override string ApplyCore(string text, RenameContext context)

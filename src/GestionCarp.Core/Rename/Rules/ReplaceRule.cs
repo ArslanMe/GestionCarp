@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using System.Text.RegularExpressions;
 
 namespace GestionCarp.Core.Rename.Rules;
@@ -11,7 +12,7 @@ public sealed class ReplaceRule : RenameRule
     private bool _replaceAll = true;
     private bool _useRegex;
 
-    public override string DisplayName => "Reemplazar";
+    public override string DisplayName => L.T("rule_replace");
 
     public string Find { get => _find; set => SetProperty(ref _find, value ?? ""); }
     public string ReplaceWith { get => _replaceWith; set => SetProperty(ref _replaceWith, value ?? ""); }
@@ -20,7 +21,7 @@ public sealed class ReplaceRule : RenameRule
     public bool UseRegex { get => _useRegex; set => SetProperty(ref _useRegex, value); }
 
     public override string Summary
-        => Find.Length == 0 ? "(sin texto a buscar)" : $"\"{Find}\" → \"{ReplaceWith}\"" + (UseRegex ? " (regex)" : "");
+        => Find.Length == 0 ? L.T("replace_sum_empty") : $"«{Find}» → «{ReplaceWith}»" + (UseRegex ? " (regex)" : "");
 
     protected override string ApplyCore(string text, RenameContext context)
     {
@@ -36,11 +37,11 @@ public sealed class ReplaceRule : RenameRule
             }
             catch (ArgumentException ex)
             {
-                throw new RenameRuleException("Expresión regular no válida: " + ex.Message, ex);
+                throw new RenameRuleException(L.F("replace_bad_regex", ex.Message), ex);
             }
             catch (RegexMatchTimeoutException ex)
             {
-                throw new RenameRuleException("La expresión regular tarda demasiado.", ex);
+                throw new RenameRuleException(L.T("replace_regex_timeout"), ex);
             }
         }
 

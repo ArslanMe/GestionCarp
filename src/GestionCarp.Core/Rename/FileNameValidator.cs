@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 namespace GestionCarp.Core.Rename;
 
 /// <summary>Comprueba que un nombre sea válido en Windows.</summary>
@@ -20,26 +21,26 @@ public static class FileNameValidator
     public static string? Validate(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            return "El nombre está vacío";
+            return L.T("val_empty");
 
         int bad = name.IndexOfAny(InvalidChars);
         if (bad >= 0)
         {
             char c = name[bad];
             return char.IsControl(c)
-                ? "Contiene un carácter de control no permitido"
-                : $"Contiene un carácter no permitido: {c}";
+                ? L.T("val_control")
+                : L.F("val_char", c);
         }
 
         if (name.EndsWith('.') || name.EndsWith(' '))
-            return "No puede terminar en punto ni en espacio";
+            return L.T("val_trailing");
 
         string stem = name.Split('.')[0].TrimEnd();
         if (ReservedNames.Contains(stem))
-            return $"\"{stem}\" es un nombre reservado de Windows";
+            return L.F("val_reserved", stem);
 
         if (name.Length > MaxNameLength)
-            return $"El nombre es demasiado largo ({name.Length} caracteres, máximo {MaxNameLength})";
+            return L.F("val_too_long", name.Length, MaxNameLength);
 
         return null;
     }

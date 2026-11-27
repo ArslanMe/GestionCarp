@@ -14,6 +14,7 @@ public class SubtitleTests
     [InlineData("[Grupo] Anime - 05 [1080p][ABCD1234]", null, 5)]
     [InlineData("Show.E09", null, 9)]
     [InlineData("Show 2019 - 08 x264", null, 8)]
+    [InlineData("Minha Série - Episódio 07", null, 7)]
     public void DetectsEpisodes(string name, int? season, int episode)
         => Assert.Equal(new EpisodeInfo(season, episode), EpisodeDetector.Detect(name));
 

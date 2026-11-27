@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows.Input;
 using GestionCarp.App.Services;
 using GestionCarp.Core.Common;
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Rename;
 using GestionCarp.Core.Rename.Rules;
 
@@ -204,20 +205,20 @@ public sealed class RenamerViewModel : ObservableObject
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Dialogs.Error($"No se pudo leer {folder}: {ex.Message}");
+            Dialogs.Error(L.F("ren_read_error", folder, ex.Message));
         }
         return result;
     }
 
     private void AddFiles()
     {
-        var files = Dialogs.PickFiles("Añadir archivos para renombrar");
+        var files = Dialogs.PickFiles(L.T("ren_pick_files"));
         if (files is not null) AddPaths(files);
     }
 
     private void AddFolder()
     {
-        var folder = Dialogs.PickFolder("Añadir el contenido de una carpeta", Items.FirstOrDefault()?.Folder);
+        var folder = Dialogs.PickFolder(L.T("ren_pick_folder"), Items.FirstOrDefault()?.Folder);
         if (folder is not null) AddPaths(new[] { folder });
     }
 
@@ -323,7 +324,7 @@ public sealed class RenamerViewModel : ObservableObject
     {
         if (Items.Count == 0)
         {
-            Summary = "Añade archivos o arrástralos a la lista.";
+            Summary = L.T("ren_sum_empty");
             return;
         }
 
@@ -332,10 +333,10 @@ public sealed class RenamerViewModel : ObservableObject
         int errors = _plan.Count(r => r.Status == RenameStatus.Error);
         int warnings = _plan.Count(r => r.Status == RenameStatus.Warning);
 
-        var parts = new List<string> { $"{Items.Count:N0} elementos", $"{changing:N0} cambian" };
-        if (subtitles > 0) parts.Add($"{subtitles:N0} subtítulos les acompañan");
-        if (warnings > 0) parts.Add($"{warnings:N0} avisos");
-        if (errors > 0) parts.Add($"{errors:N0} con errores (no se renombrarán)");
+        var parts = new List<string> { L.F("ren_sum_items", Items.Count), L.F("ren_sum_changing", changing) };
+        if (subtitles > 0) parts.Add(L.F("ren_sum_subs", subtitles));
+        if (warnings > 0) parts.Add(L.F("ren_sum_warn", warnings));
+        if (errors > 0) parts.Add(L.F("ren_sum_errors", errors));
         Summary = string.Join(" · ", parts);
     }
 
@@ -345,19 +346,26 @@ public sealed class RenamerViewModel : ObservableObject
         var operations = RenamePlanner.ToOperations(_plan);
         if (operations.Count == 0)
         {
-            Dialogs.Info("No hay ningún cambio que aplicar.");
+            Dialogs.Info(L.T("ren_nothing"));
             return;
         }
 
         int errors = _plan.Count(r => r.Status == RenameStatus.Error);
-        string message = $"Se van a renombrar {operations.Count:N0} elementos.";
-        if (errors > 0) message += $"\n{errors:N0} elementos con errores se dejarán como están.";
-        message += "\n\nPodrás deshacerlo con «Deshacer». ¿Continuar?";
+        string message = L.F("ren_confirm", operations.Count);
+        if (errors > 0) message += "\n" + L.F("ren_confirm_errors", errors);
+        message += "\n\n" + L.T("confirm_undo_hint");
         if (!Dialogs.Confirm(message)) return;
 
-        var result = _service.Execute(operations, $"Renombrar {operations.Count} elementos");
+        var result = _service.Execute(operations, L.F("ren_batch", operations.Count));
         if (!result.Success)
-            Dialogs.Error(result.Error ?? "Error desconocido");
+            Dialogs.Error(result.Error ?? L.T("err_unknown"));
+    }
+
+    public void OnLanguageChanged()
+    {
+        foreach (var rule in Rules) rule.RefreshTexts();
+        OnPropertyChanged(nameof(UndoDescription));
+        Refresh();
     }
 
     private void Undo()
@@ -365,7 +373,7 @@ public sealed class RenamerViewModel : ObservableObject
         if (!Dialogs.Confirm(_service.UndoDescription + "?")) return;
         var result = _service.Undo();
         if (!result.Success)
-            Dialogs.Error(result.Error ?? "Error desconocido");
+            Dialogs.Error(result.Error ?? L.T("err_unknown"));
     }
 
     /// <summary>Tras renombrar o deshacer (aquí o en otra pestaña), actualiza las rutas de la lista.</summary>

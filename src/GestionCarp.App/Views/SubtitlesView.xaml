@@ -1,40 +1,41 @@
 <UserControl x:Class="GestionCarp.App.Views.SubtitlesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:GestionCarp.App.Localization"
              xmlns:vm="clr-namespace:GestionCarp.App.ViewModels"
              xmlns:core="clr-namespace:GestionCarp.Core.Rename;assembly=GestionCarp.Core"
              AllowDrop="True" Drop="OnDrop" DragOver="OnDragOver">
     <DockPanel Margin="10">
         <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" FontSize="12.5" Margin="0,0,0,8"
-                   Text="Los reproductores (VLC, MPC-HC, PotPlayer, Plex, Kodi…) cargan solos el subtítulo que se llama igual que el vídeo: «Cap01.mkv» → «Cap01.srt» o «Cap01.es.srt». Aquí se emparejan aunque ahora tengan nombres distintos."/>
+                   Text="{l:Tr sub_intro}"/>
 
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-            <TextBlock Text="Carpeta:" Style="{StaticResource FieldLabel}" FontWeight="SemiBold"/>
+            <TextBlock Text="{l:Tr lbl_folder}" Style="{StaticResource FieldLabel}" FontWeight="SemiBold"/>
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="6,0,0,0">
-                <Button Content="Examinar…" Command="{Binding BrowseCommand}"/>
-                <Button Content="Analizar" Command="{Binding AnalyzeCommand}" Style="{StaticResource PrimaryButton}" Margin="0"/>
+                <Button Content="{l:Tr btn_browse}" Command="{Binding BrowseCommand}"/>
+                <Button Content="{l:Tr btn_scan}" Command="{Binding AnalyzeCommand}" Style="{StaticResource PrimaryButton}" Margin="0"/>
             </StackPanel>
             <TextBox Text="{Binding FolderPath, UpdateSourceTrigger=PropertyChanged}"/>
         </DockPanel>
 
         <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-            <TextBlock Text="Emparejar:" Style="{StaticResource FieldLabel}"/>
+            <TextBlock Text="{l:Tr sub_match}" Style="{StaticResource FieldLabel}"/>
             <ComboBox Width="330" Margin="0,0,16,4" ItemsSource="{x:Static vm:Choices.SubtitleModes}" DisplayMemberPath="Label"
                       SelectedValuePath="Value" SelectedValue="{Binding Mode}"/>
-            <CheckBox Content="Incluir subcarpetas" IsChecked="{Binding IncludeSubfolders}" Margin="0,0,14,4"/>
-            <CheckBox Content="Conservar idioma (.es, .en, .forced…)" IsChecked="{Binding KeepLanguageTags}" Margin="0,0,14,4"/>
-            <TextBlock Text="Idioma si no tiene:" Style="{StaticResource FieldLabel}"/>
+            <CheckBox Content="{l:Tr lbl_subfolders}" IsChecked="{Binding IncludeSubfolders}" Margin="0,0,14,4"/>
+            <CheckBox Content="{l:Tr sub_keep_lang}" IsChecked="{Binding KeepLanguageTags}" Margin="0,0,14,4"/>
+            <TextBlock Text="{l:Tr sub_default_lang}" Style="{StaticResource FieldLabel}"/>
             <TextBox Width="50" Margin="0,0,14,4" Text="{Binding DefaultLanguage, UpdateSourceTrigger=PropertyChanged}"
-                     ToolTip="Por ejemplo «es» → Cap01.es.srt. Vacío = no se añade"/>
-            <CheckBox Content="Sacar de «Subs» y ponerlos junto al vídeo" IsChecked="{Binding MoveToVideoFolder}" Margin="0,0,14,4"/>
+                     ToolTip="{l:Tr sub_default_lang_tip}"/>
+            <CheckBox Content="{l:Tr sub_move}" IsChecked="{Binding MoveToVideoFolder}" Margin="0,0,14,4"/>
         </WrapPanel>
 
         <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button Content="Marcar todos" Command="{Binding SelectAllCommand}"/>
-                <Button Content="Ninguno" Command="{Binding SelectNoneCommand}"/>
-                <Button Content="↶ Deshacer" Command="{Binding UndoCommand}" ToolTip="{Binding UndoDescription}"/>
-                <Button Content="Renombrar subtítulos" Command="{Binding ApplyCommand}" Style="{StaticResource PrimaryButton}" Margin="0"/>
+                <Button Content="{l:Tr sub_select_all}" Command="{Binding SelectAllCommand}"/>
+                <Button Content="{l:Tr sub_select_none}" Command="{Binding SelectNoneCommand}"/>
+                <Button Content="{l:Tr btn_undo}" Command="{Binding UndoCommand}" ToolTip="{Binding UndoDescription}"/>
+                <Button Content="{l:Tr sub_apply}" Command="{Binding ApplyCommand}" Style="{StaticResource PrimaryButton}" Margin="0"/>
             </StackPanel>
             <TextBlock Text="{Binding Summary}" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
         </DockPanel>
@@ -69,24 +70,24 @@
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Include, UpdateSourceTrigger=PropertyChanged}"
                                           HorizontalAlignment="Center" Margin="0"
-                                          ToolTip="Desmarca para no renombrar este subtítulo"/>
+                                          ToolTip="{l:Tr sub_include_tip}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="" Binding="{Binding StatusIcon}" Width="26"/>
-                    <DataGridTextColumn Header="Subtítulo actual" Binding="{Binding CurrentName}" Width="*"/>
-                    <DataGridTextColumn Header="🎬 Vídeo" Binding="{Binding VideoName}" Width="*"/>
-                    <DataGridTextColumn Header="Nombre nuevo" Binding="{Binding NewName}" Width="*">
+                    <DataGridTextColumn Header="{l:Tr col_sub_current}" Binding="{Binding CurrentName}" Width="*"/>
+                    <DataGridTextColumn Header="{l:Tr col_video}" Binding="{Binding VideoName}" Width="*"/>
+                    <DataGridTextColumn Header="{l:Tr col_new}" Binding="{Binding NewName}" Width="*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="FontWeight" Value="SemiBold"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Observaciones" Binding="{Binding Message}" Width="220"/>
+                    <DataGridTextColumn Header="{l:Tr col_notes}" Binding="{Binding Message}" Width="220"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <TextBlock Text="Elige o arrastra aquí la carpeta de la serie y pulsa «Analizar»."
+            <TextBlock Text="{l:Tr sub_empty_hint}"
                        Style="{StaticResource Hint}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"
                        IsHitTestVisible="False"
                        Visibility="{Binding HasRows, Converter={StaticResource InverseBoolToVisibility}}"/>

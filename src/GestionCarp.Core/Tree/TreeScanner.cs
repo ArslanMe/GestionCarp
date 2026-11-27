@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Common;
 
 namespace GestionCarp.Core.Tree;
@@ -12,7 +13,7 @@ public static class TreeScanner
     {
         var root = new DirectoryInfo(rootPath);
         if (!root.Exists)
-            throw new DirectoryNotFoundException($"No existe la carpeta: {rootPath}");
+            throw new DirectoryNotFoundException(L.F("tree_not_found", rootPath));
 
         var state = new ScanState(options, progress, cancellationToken);
         var node = CreateDirectoryNode(root, isRoot: true);
@@ -52,7 +53,7 @@ public static class TreeScanner
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or System.Security.SecurityException)
         {
-            node.Error = "Sin acceso";
+            node.Error = L.T("tree_no_access");
             return;
         }
 

@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -27,7 +28,7 @@ public sealed class RemoveRule : RenameRule
     private string _closeDelimiter = "]";
     private bool _cleanSpaces = true;
 
-    public override string DisplayName => "Eliminar";
+    public override string DisplayName => L.T("rule_remove");
 
     public RemoveMode Mode { get => _mode; set => SetProperty(ref _mode, value); }
     public int Count { get => _count; set => SetProperty(ref _count, Math.Max(0, value)); }
@@ -43,10 +44,10 @@ public sealed class RemoveRule : RenameRule
 
     public override string Summary => Mode switch
     {
-        RemoveMode.LastChars => $"Últimos {Count} caracteres",
-        RemoveMode.Range => $"{Count} caracteres desde la posición {From}",
-        RemoveMode.BetweenDelimiters => $"Todo lo que esté entre {OpenDelimiter} y {CloseDelimiter}",
-        _ => $"Primeros {Count} caracteres",
+        RemoveMode.LastChars => L.F("rem_sum_last", Count),
+        RemoveMode.Range => L.F("rem_sum_range", Count, From),
+        RemoveMode.BetweenDelimiters => L.F("rem_sum_between", OpenDelimiter, CloseDelimiter),
+        _ => L.F("rem_sum_first", Count),
     };
 
     protected override string ApplyCore(string text, RenameContext context)

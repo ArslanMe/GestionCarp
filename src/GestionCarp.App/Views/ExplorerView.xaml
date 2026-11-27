@@ -1,6 +1,7 @@
 <UserControl x:Class="GestionCarp.App.Views.ExplorerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:GestionCarp.App.Localization"
              xmlns:vm="clr-namespace:GestionCarp.App.ViewModels"
              AllowDrop="True" Drop="OnDrop" DragOver="OnDragOver">
     <Grid Margin="10">
@@ -13,32 +14,32 @@
 
         <!-- Carpeta -->
         <DockPanel Grid.Row="0" Margin="0,0,0,8">
-            <TextBlock Text="Carpeta:" Style="{StaticResource FieldLabel}" FontWeight="SemiBold"/>
+            <TextBlock Text="{l:Tr lbl_folder}" Style="{StaticResource FieldLabel}" FontWeight="SemiBold"/>
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="6,0,0,0">
-                <Button Content="Examinar…" Command="{Binding BrowseCommand}"/>
-                <Button Content="Analizar" Command="{Binding ScanCommand}" Style="{StaticResource PrimaryButton}" IsDefault="True"/>
-                <Button Content="Cancelar" Command="{Binding CancelCommand}"
+                <Button Content="{l:Tr btn_browse}" Command="{Binding BrowseCommand}"/>
+                <Button Content="{l:Tr btn_scan}" Command="{Binding ScanCommand}" Style="{StaticResource PrimaryButton}" IsDefault="True"/>
+                <Button Content="{l:Tr btn_cancel}" Command="{Binding CancelCommand}"
                         Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibility}}"/>
             </StackPanel>
             <TextBox Text="{Binding RootPath, UpdateSourceTrigger=PropertyChanged}"
-                     ToolTip="Escribe o pega una ruta, o arrastra una carpeta a la ventana"/>
+                     ToolTip="{l:Tr exp_path_tip}"/>
         </DockPanel>
 
         <!-- Opciones de análisis -->
         <WrapPanel Grid.Row="1" Margin="0,0,0,8">
-            <TextBlock Text="Profundidad:" Style="{StaticResource FieldLabel}"/>
+            <TextBlock Text="{l:Tr exp_depth}" Style="{StaticResource FieldLabel}"/>
             <TextBox Width="42" Text="{Binding MaxDepth, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,4,0"
-                     ToolTip="Niveles de subcarpetas a analizar. 0 = sin límite"/>
-            <TextBlock Text="(0 = todo)" Style="{StaticResource Hint}" VerticalAlignment="Center" Margin="0,0,16,0"/>
-            <CheckBox Content="Mostrar archivos" IsChecked="{Binding IncludeFiles}"
-                      ToolTip="Si lo desmarcas, solo se muestran carpetas (los tamaños siguen contando los archivos)"/>
-            <CheckBox Content="Incluir ocultos y de sistema" IsChecked="{Binding IncludeHidden}"/>
-            <TextBlock Text="Excluir:" Style="{StaticResource FieldLabel}"/>
+                     ToolTip="{l:Tr exp_depth_tip}"/>
+            <TextBlock Text="{l:Tr exp_depth_all}" Style="{StaticResource Hint}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <CheckBox Content="{l:Tr exp_show_files}" IsChecked="{Binding IncludeFiles}"
+                      ToolTip="{l:Tr exp_show_files_tip}"/>
+            <CheckBox Content="{l:Tr exp_hidden}" IsChecked="{Binding IncludeHidden}"/>
+            <TextBlock Text="{l:Tr exp_exclude}" Style="{StaticResource FieldLabel}"/>
             <TextBox Width="280" Text="{Binding ExcludePatterns}" Margin="0,0,16,0"
-                     ToolTip="Nombres o patrones separados por ; (admite * y ?)"/>
-            <TextBlock Text="Solo archivos:" Style="{StaticResource FieldLabel}"/>
+                     ToolTip="{l:Tr exp_exclude_tip}"/>
+            <TextBlock Text="{l:Tr exp_only_files}" Style="{StaticResource FieldLabel}"/>
             <TextBox Width="150" Text="{Binding FilePatterns}"
-                     ToolTip="Ejemplo: *.mkv; *.mp4. Vacío = todos"/>
+                     ToolTip="{l:Tr exp_only_files_tip}"/>
         </WrapPanel>
 
         <Grid Grid.Row="2">
@@ -49,13 +50,13 @@
             </Grid.ColumnDefinitions>
 
             <!-- Árbol -->
-            <GroupBox Grid.Column="0" Header="Contenido" Margin="0">
+            <GroupBox Grid.Column="0" Header="{l:Tr exp_content}" Margin="0">
                 <DockPanel>
                     <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                        <Button Content="✏️ Renombrar archivos de esta carpeta" Command="{Binding SendToRenamerCommand}" Margin="0,0,6,4"
-                                ToolTip="Envía los archivos de la carpeta seleccionada al renombrador"/>
-                        <Button Content="💬 Emparejar subtítulos aquí" Command="{Binding SendToSubtitlesCommand}" Margin="0,0,6,4"/>
-                        <Button Content="Abrir en el Explorador" Command="{Binding OpenInExplorerCommand}" Margin="0,0,6,4"/>
+                        <Button Content="{l:Tr exp_send_rename}" Command="{Binding SendToRenamerCommand}" Margin="0,0,6,4"
+                                ToolTip="{l:Tr exp_send_rename_tip}"/>
+                        <Button Content="{l:Tr exp_send_subs}" Command="{Binding SendToSubtitlesCommand}" Margin="0,0,6,4"/>
+                        <Button Content="{l:Tr exp_open_explorer}" Command="{Binding OpenInExplorerCommand}" Margin="0,0,6,4"/>
                     </WrapPanel>
                     <Grid>
                         <TreeView ItemsSource="{Binding RootNodes}"
@@ -80,7 +81,7 @@
                                 </HierarchicalDataTemplate>
                             </TreeView.ItemTemplate>
                         </TreeView>
-                        <TextBlock Text="Elige una carpeta o arrástrala aquí para ver su contenido."
+                        <TextBlock Text="{l:Tr exp_empty_hint}"
                                    Style="{StaticResource Hint}" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"
                                    IsHitTestVisible="False"
                                    Visibility="{Binding HasTree, Converter={StaticResource InverseBoolToVisibility}}"/>
@@ -91,27 +92,27 @@
             <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent"/>
 
             <!-- Exportación -->
-            <GroupBox Grid.Column="2" Header="Exportar / compartir la estructura" Margin="0">
+            <GroupBox Grid.Column="2" Header="{l:Tr exp_export_header}" Margin="0">
                 <DockPanel>
                     <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
-                        <TextBlock Text="Formato:" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{l:Tr exp_format}" Style="{StaticResource FieldLabel}"/>
                         <ComboBox Width="140" Margin="0,0,14,0"
                                   ItemsSource="{x:Static vm:Choices.ExportFormats}" DisplayMemberPath="Label"
                                   SelectedValuePath="Value" SelectedValue="{Binding ExportFormat}"/>
-                        <TextBlock Text="Niveles:" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Text="{l:Tr exp_levels}" Style="{StaticResource FieldLabel}"/>
                         <TextBox Width="42" Text="{Binding ExportDepth, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,14,0"
-                                 ToolTip="Niveles a exportar. 0 = todos"/>
+                                 ToolTip="{l:Tr exp_levels_tip}"/>
                     </WrapPanel>
                     <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
-                        <CheckBox Content="Archivos" IsChecked="{Binding ExportIncludeFiles}"/>
-                        <CheckBox Content="Tamaños" IsChecked="{Binding ShowSizes}"/>
-                        <CheckBox Content="Fechas" IsChecked="{Binding ShowDates}"/>
-                        <CheckBox Content="Totales por carpeta" IsChecked="{Binding ShowCounts}"/>
+                        <CheckBox Content="{l:Tr exp_opt_files}" IsChecked="{Binding ExportIncludeFiles}"/>
+                        <CheckBox Content="{l:Tr exp_opt_sizes}" IsChecked="{Binding ShowSizes}"/>
+                        <CheckBox Content="{l:Tr exp_opt_dates}" IsChecked="{Binding ShowDates}"/>
+                        <CheckBox Content="{l:Tr exp_opt_counts}" IsChecked="{Binding ShowCounts}"/>
                     </WrapPanel>
                     <TextBlock DockPanel.Dock="Top" Text="{Binding ExportTitle}" Style="{StaticResource Hint}" Margin="0,0,0,6"/>
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0">
-                        <Button Content="📋 Copiar al portapapeles" Command="{Binding CopyCommand}" Style="{StaticResource PrimaryButton}"/>
-                        <Button Content="💾 Guardar como…" Command="{Binding SaveCommand}"/>
+                        <Button Content="{l:Tr exp_copy}" Command="{Binding CopyCommand}" Style="{StaticResource PrimaryButton}"/>
+                        <Button Content="{l:Tr exp_save}" Command="{Binding SaveCommand}"/>
                     </StackPanel>
                     <TextBox Text="{Binding ExportPreview, Mode=OneWay}" IsReadOnly="True"
                              FontFamily="Cascadia Mono, Consolas, Courier New" FontSize="12.5"

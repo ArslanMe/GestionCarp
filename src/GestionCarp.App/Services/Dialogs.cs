@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using GestionCarp.Core.Localization;
 using Microsoft.Win32;
 
 namespace GestionCarp.App.Services;
@@ -8,10 +9,10 @@ public static class Dialogs
 {
     private const string AppName = "GestionCarp";
 
-    public const string MediaFilter =
-        "Todos los archivos|*.*|" +
-        "Vídeos|*.mkv;*.mp4;*.avi;*.mov;*.wmv;*.m4v;*.webm;*.ts;*.m2ts;*.flv;*.mpg;*.mpeg|" +
-        "Subtítulos|*.srt;*.ass;*.ssa;*.sub;*.idx;*.vtt;*.sup";
+    public static string MediaFilter =>
+        L.T("dlg_filter_all") + "|*.*|" +
+        L.T("dlg_filter_videos") + "|*.mkv;*.mp4;*.avi;*.mov;*.wmv;*.m4v;*.webm;*.ts;*.m2ts;*.flv;*.mpg;*.mpeg|" +
+        L.T("dlg_filter_subs") + "|*.srt;*.ass;*.ssa;*.sub;*.idx;*.vtt;*.sup";
 
     public static string? PickFolder(string title, string? initial = null)
     {
@@ -21,9 +22,9 @@ public static class Dialogs
         return Show(dialog) ? dialog.FolderName : null;
     }
 
-    public static string[]? PickFiles(string title, string filter = MediaFilter)
+    public static string[]? PickFiles(string title, string? filter = null)
     {
-        var dialog = new OpenFileDialog { Title = title, Multiselect = true, Filter = filter };
+        var dialog = new OpenFileDialog { Title = title, Multiselect = true, Filter = filter ?? MediaFilter };
         return Show(dialog) ? dialog.FileNames : null;
     }
 

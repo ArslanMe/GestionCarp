@@ -1,0 +1,33 @@
+<Window x:Class="GestionCarp.App.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:GestionCarp.App.Localization"
+        Title="{l:Tr about_title}" Icon="/Assets/app.ico"
+        Width="440" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        FontFamily="Segoe UI" FontSize="13" UseLayoutRounding="True">
+    <StackPanel Margin="24,20,24,18">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+            <Image Source="/Assets/app.png" Width="72" Height="72" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                <TextBlock Text="GestionCarp" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock x:Name="VersionText" Foreground="{StaticResource MutedBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Text="{l:Tr about_desc}" TextWrapping="Wrap" Margin="0,0,0,14"/>
+
+        <TextBlock>
+            <Run Text="{l:Tr about_created_by}"/><Run Text=" "/><Run x:Name="AuthorRun" FontWeight="SemiBold"/>
+        </TextBlock>
+        <TextBlock x:Name="CopyrightText" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+        <TextBlock Margin="0,8,0,0">
+            <Hyperlink x:Name="RepoLink" Click="OnRepoClick"><Run x:Name="RepoRun"/></Hyperlink>
+        </TextBlock>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="{l:Tr about_check}" Click="OnCheckUpdates"/>
+            <Button Content="{l:Tr about_close}" IsDefault="True" IsCancel="True" Click="OnClose" Margin="0" MinWidth="80"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

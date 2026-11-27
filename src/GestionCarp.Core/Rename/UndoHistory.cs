@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using System.Text.Json;
 
 namespace GestionCarp.Core.Rename;
@@ -38,7 +39,7 @@ public sealed class UndoHistory
     /// <summary>Deshace el último lote. Si falla, el lote se queda en el historial.</summary>
     public RenameResult UndoLast()
     {
-        var batch = Last ?? throw new InvalidOperationException("No hay nada que deshacer.");
+        var batch = Last ?? throw new InvalidOperationException(L.T("hist_empty"));
         var result = RenameExecutor.Undo(batch);
         if (result.Success)
         {

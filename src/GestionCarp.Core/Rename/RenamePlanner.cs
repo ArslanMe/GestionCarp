@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Common;
 using GestionCarp.Core.Subtitles;
 
@@ -68,7 +69,7 @@ public static class RenamePlanner
                         GroupKey = item.FullPath,
                         IsCompanion = true,
                         RelatedName = item.Name,
-                        Message = "Subtítulo de " + item.Name,
+                        Message = L.F("plan_companion", item.Name),
                     });
                 }
             }
@@ -94,7 +95,7 @@ public static class RenamePlanner
             else if (row.TargetPath.Length > FileNameValidator.MaxPathLength)
             {
                 row.Status = RenameStatus.Warning;
-                row.Message = "Ruta muy larga: algunos programas podrían no abrirlo";
+                row.Message = L.T("plan_long_path");
             }
         }
 
@@ -115,14 +116,14 @@ public static class RenamePlanner
             {
                 if (finalPaths[row.TargetPath] > 1)
                 {
-                    row.SetError("Nombre duplicado: otro elemento acabaría con el mismo nombre");
+                    row.SetError(L.T("plan_duplicate"));
                     changed = true;
                 }
                 else if (!PathComparer.Equals(row.SourcePath, row.TargetPath)
                          && !movingSources.Contains(row.TargetPath)
                          && pathExists(row.TargetPath))
                 {
-                    row.SetError("Ya existe un elemento con ese nombre");
+                    row.SetError(L.T("plan_exists"));
                     changed = true;
                 }
             }
@@ -136,8 +137,8 @@ public static class RenamePlanner
         foreach (var row in rows.Where(r => r.IsMoving && failedGroups.Contains(r.GroupKey)))
         {
             row.SetError(row.IsCompanion
-                ? "No se renombra porque su vídeo tiene un error"
-                : "No se renombra porque uno de sus subtítulos tiene un error");
+                ? L.T("plan_video_failed")
+                : L.T("plan_sub_failed"));
             changed = true;
         }
         return changed;

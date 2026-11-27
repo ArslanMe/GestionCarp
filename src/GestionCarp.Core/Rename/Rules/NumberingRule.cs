@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using System.Globalization;
 
 namespace GestionCarp.Core.Rename.Rules;
@@ -23,7 +24,7 @@ public sealed class NumberingRule : RenameRule
     private int _digits = 2;
     private bool _restartPerFolder;
 
-    public override string DisplayName => "Numerar";
+    public override string DisplayName => L.T("rule_num");
 
     public NumberPlacement Placement { get => _placement; set => SetProperty(ref _placement, value); }
     public string TextBefore { get => _textBefore; set => SetProperty(ref _textBefore, value ?? ""); }
@@ -44,9 +45,9 @@ public sealed class NumberingRule : RenameRule
             string sample = Format(Start);
             return Placement switch
             {
-                NumberPlacement.Prefix => $"Al inicio: \"{sample}…\"",
-                NumberPlacement.Suffix => $"Al final: \"…{sample}\"",
-                _ => $"Nombre: \"{sample}\", \"{Format(Start + Step)}\"…",
+                NumberPlacement.Prefix => L.F("num_sum_prefix", sample),
+                NumberPlacement.Suffix => L.F("num_sum_suffix", sample),
+                _ => L.F("num_sum_replace", sample, Format(Start + Step)),
             };
         }
     }

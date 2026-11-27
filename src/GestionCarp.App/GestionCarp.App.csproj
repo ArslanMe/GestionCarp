@@ -13,7 +13,17 @@
     <Product>GestionCarp</Product>
     <Version>0.1.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Authors>Raudel Camacho</Authors>
+    <Company>Raudel Camacho</Company>
+    <Copyright>© 2026 Raudel Camacho</Copyright>
+    <Description>Explorador de carpetas, exportación de estructuras y renombrado por lotes.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\app.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GestionCarp.Core\GestionCarp.Core.csproj" />

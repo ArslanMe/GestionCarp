@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Common;
 using GestionCarp.Core.Rename;
 
@@ -38,7 +39,7 @@ public static class SubtitleMatcher
 
     private static readonly HashSet<string> SubtitleFolderNames = new(StringComparer.OrdinalIgnoreCase)
     {
-        "subs", "sub", "subtitles", "subtitle", "subtitulos", "subtítulos", "subtitulo", "subtítulo",
+        "subs", "sub", "subtitles", "subtitle", "subtitulos", "subtítulos", "subtitulo", "subtítulo", "legendas", "legenda",
     };
 
     /// <summary>Carpeta a la que "pertenece" un subtítulo: la suya, o la superior si está en "Subs".</summary>
@@ -70,7 +71,7 @@ public static class SubtitleMatcher
                 {
                     Status = RenameStatus.Skipped,
                     RelatedName = Path.GetFileName(excludedVideo),
-                    Message = "Desmarcado: no se renombrará",
+                    Message = L.T("sub_unchecked"),
                 });
                 continue;
             }
@@ -80,7 +81,7 @@ public static class SubtitleMatcher
                 rows.Add(new RenamePreviewRow(subtitle, false, subtitle)
                 {
                     Status = RenameStatus.Skipped,
-                    Message = reasons.GetValueOrDefault(subtitle, "Sin vídeo correspondiente"),
+                    Message = reasons.GetValueOrDefault(subtitle, L.T("sub_no_video")),
                 });
                 continue;
             }
@@ -102,7 +103,7 @@ public static class SubtitleMatcher
             rows.Add(new RenamePreviewRow(subtitle, false, target)
             {
                 RelatedName = Path.GetFileName(video),
-                Message = options.Mode == SubtitleMatchMode.ByEpisode && episode is not null ? "Episodio " + episode : null,
+                Message = options.Mode == SubtitleMatchMode.ByEpisode && episode is not null ? L.F("sub_episode", episode) : null,
             });
         }
 
@@ -123,7 +124,7 @@ public static class SubtitleMatcher
             var info = EpisodeDetector.Detect(Path.GetFileNameWithoutExtension(subtitle));
             if (info is null)
             {
-                reasons[subtitle] = "No se encontró el número de episodio en el nombre";
+                reasons[subtitle] = L.T("sub_no_number");
                 continue;
             }
 
@@ -140,9 +141,9 @@ public static class SubtitleMatcher
             if (candidates.Count == 1)
                 pairs[subtitle] = candidates[0].Path;
             else if (candidates.Count == 0)
-                reasons[subtitle] = $"No hay ningún vídeo del episodio {info}";
+                reasons[subtitle] = L.F("sub_no_episode_video", info);
             else
-                reasons[subtitle] = $"Varios vídeos coinciden con el episodio {info}";
+                reasons[subtitle] = L.F("sub_ambiguous", info);
         }
     }
 
@@ -165,7 +166,7 @@ public static class SubtitleMatcher
             var sorted = group.OrderBy(s => s, NaturalStringComparer.Instance).ToList();
             if (!videosByFolder.TryGetValue(HomeFolder(sorted[0]), out var folderVideos))
             {
-                foreach (var s in sorted) reasons[s] = "No hay vídeos en su carpeta";
+                foreach (var s in sorted) reasons[s] = L.T("sub_no_videos_folder");
                 continue;
             }
 
@@ -174,7 +175,7 @@ public static class SubtitleMatcher
                 if (i < folderVideos.Count)
                     pairs[sorted[i]] = folderVideos[i];
                 else
-                    reasons[sorted[i]] = "Hay más subtítulos que vídeos en la carpeta";
+                    reasons[sorted[i]] = L.T("sub_more_than_videos");
             }
         }
     }
