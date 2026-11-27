@@ -154,7 +154,7 @@ public class OfficeExportTests
 {
     private static TreeNode SampleTree(TempFolder t)
     {
-        t.File("Serie & Co/Temporada 1/Cap <01>.mkv", "12345");
+        t.File("Serie & Co/Temporada 1/Cap '01' & más.mkv", "12345");
         t.File("Serie & Co/notas.txt");
         return TreeScanner.Scan(t.Combine("Serie & Co"), new TreeScanOptions());
     }
@@ -172,7 +172,7 @@ public class OfficeExportTests
         var sheet = XDocument.Load(zip.GetEntry("xl/worksheets/sheet1.xml")!.Open());
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
         Assert.Equal(5, sheet.Descendants(ns + "row").Count()); // cabecera + 4 elementos
-        Assert.Contains(sheet.Descendants(ns + "t"), e => e.Value.Trim() == "Cap <01>.mkv");
+        Assert.Contains(sheet.Descendants(ns + "t"), e => e.Value.Trim() == "Cap '01' & más.mkv");
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class OfficeExportTests
 
         string html = TreeExporter.Export(root, new TreeExportOptions { Format = TreeExportFormat.Html });
         Assert.Contains("Serie &amp; Co", html);
-        Assert.Contains("Cap &lt;01&gt;.mkv", html);
+        Assert.Contains("Cap &#39;01&#39; &amp; m", html);
         Assert.Contains("<details", html);
     }
 }
