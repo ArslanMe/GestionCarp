@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GestionCarp.Core.Localization;
 namespace GestionCarp.Core.Rename.Rules;
 
@@ -16,7 +17,7 @@ public sealed class InsertRule : RenameRule
     private InsertPosition _position = InsertPosition.Start;
     private int _index;
 
-    public override string DisplayName => L.T("rule_insert");
+    [JsonIgnore] public override string DisplayName => L.T("rule_insert");
 
     public string Text { get => _text; set => SetProperty(ref _text, value ?? ""); }
     public InsertPosition Position { get => _position; set => SetProperty(ref _position, value); }
@@ -24,7 +25,7 @@ public sealed class InsertRule : RenameRule
     /// <summary>Número de caracteres que quedan antes del texto insertado (0 = al inicio).</summary>
     public int Index { get => _index; set => SetProperty(ref _index, Math.Max(0, value)); }
 
-    public override string Summary => Position switch
+    [JsonIgnore] public override string Summary => Position switch
     {
         InsertPosition.End => L.F("ins_sum_end", Text),
         InsertPosition.AtIndex => L.F("ins_sum_index", Text, Index),

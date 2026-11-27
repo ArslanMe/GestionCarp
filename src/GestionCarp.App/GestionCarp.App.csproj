@@ -24,6 +24,7 @@
   <ItemGroup>
     <Resource Include="Assets\app.ico" />
     <Resource Include="Assets\app.png" />
+    <EmbeddedResource Include="Assets\Help\guia.html" LogicalName="GestionCarp.Help.guia.html" />
   </ItemGroup>
 
   <ItemGroup>

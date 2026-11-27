@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GestionCarp.Core.Localization;
 using System.Globalization;
 
@@ -18,11 +19,11 @@ public sealed class CaseRule : RenameRule
 {
     private CaseMode _mode = CaseMode.Title;
 
-    public override string DisplayName => L.T("rule_case");
+    [JsonIgnore] public override string DisplayName => L.T("rule_case");
 
     public CaseMode Mode { get => _mode; set => SetProperty(ref _mode, value); }
 
-    public override string Summary => Mode switch
+    [JsonIgnore] public override string Summary => Mode switch
     {
         CaseMode.Lower => L.T("case_sum_lower"),
         CaseMode.Upper => L.T("case_sum_upper"),

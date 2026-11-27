@@ -18,6 +18,9 @@ namespace GestionCarp.App.ViewModels;
 public sealed class RenamerViewModel : ObservableObject
 {
     private readonly RenameService _service;
+    private readonly PresetStore _presets = new(Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GestionCarp", "presets.json"));
+    private string? _selectedPreset;
     private readonly HashSet<string> _paths = new(StringComparer.OrdinalIgnoreCase);
     private List<RenamePreviewRow> _plan = new();
     private RenameRule? _selectedRule;
@@ -54,6 +57,13 @@ public sealed class RenamerViewModel : ObservableObject
         MoveItemsUpCommand = new RelayCommand(p => MoveItems(p as IList, -1), p => p is IList { Count: > 0 });
         MoveItemsDownCommand = new RelayCommand(p => MoveItems(p as IList, 1), p => p is IList { Count: > 0 });
 
+        LoadPresetCommand = new RelayCommand(LoadPreset, () => SelectedPreset is not null);
+        SavePresetCommand = new RelayCommand(SavePreset, () => Rules.Count > 0);
+        DeletePresetCommand = new RelayCommand(DeletePreset, () => SelectedPreset is not null);
+        ExportPresetCommand = new RelayCommand(ExportPreset, () => SelectedPreset is not null);
+        ImportPresetCommand = new RelayCommand(ImportPreset);
+        ReloadPresetNames();
+
         RenameCommand = new RelayCommand(Rename, () => _plan.Any(r => r.IsMoving));
         UndoCommand = new RelayCommand(Undo, () => _service.CanUndo);
 
@@ -74,7 +84,27 @@ public sealed class RenamerViewModel : ObservableObject
     public ICommand SortCommand { get; }
     public ICommand MoveItemsUpCommand { get; }
     public ICommand MoveItemsDownCommand { get; }
+    public ICommand LoadPresetCommand { get; }
+    public ICommand SavePresetCommand { get; }
+    public ICommand DeletePresetCommand { get; }
+    public ICommand ExportPresetCommand { get; }
+    public ICommand ImportPresetCommand { get; }
     public ICommand RenameCommand { get; }
+
+    public ObservableCollection<string> PresetNames { get; } = new();
+
+    public string? SelectedPreset { get => _selectedPreset; set => SetProperty(ref _selectedPreset, value); }
+
+    /// <summary>Ejemplos para el desplegable de plantillas de series.</summary>
+    public static IReadOnlyList<string> SeriesTemplateExamples { get; } = new[]
+    {
+        "{serie} - T{temp:00}E{ep:00}",
+        "{serie} - S{temp:00}E{ep:00}",
+        "{serie} - {temp}x{ep:00}",
+        "{serie} - T{temp:00}E{ep:00} - {titulo}",
+        "{serie} {temp}x{ep:00} {titulo}",
+        "Cap {ep:00}",
+    };
     public ICommand UndoCommand { get; }
 
     public RenameRule? SelectedRule
@@ -114,6 +144,8 @@ public sealed class RenamerViewModel : ObservableObject
             "Insertar" => new InsertRule(),
             "Eliminar" => new RemoveRule(),
             "Mayusculas" => new CaseRule(),
+            "Limpiar" => new CleanupRule(),
+            "Serie" => new SeriesTemplateRule(),
             _ => new NumberingRule { TextBefore = SuggestSeriesName() },
         };
         Rules.Add(rule);
@@ -126,6 +158,96 @@ public sealed class RenamerViewModel : ObservableObject
         var folder = Items.FirstOrDefault()?.Folder;
         return string.IsNullOrEmpty(folder) ? "" : Path.GetFileName(folder) + " - ";
     }
+
+    // ---------- Presets ----------
+
+    private void ReloadPresetNames(string? select = null)
+    {
+        PresetNames.Clear();
+        foreach (var preset in _presets.Presets) PresetNames.Add(preset.Name);
+        SelectedPreset = select is not null && PresetNames.Contains(select) ? select : PresetNames.FirstOrDefault();
+    }
+
+    private void ReplaceRules(IEnumerable<RenameRule> rules)
+    {
+        _suspendRefresh = true;
+        try
+        {
+            while (Rules.Count > 0) Rules.RemoveAt(Rules.Count - 1);
+            foreach (var rule in rules) Rules.Add(rule);
+        }
+        finally
+        {
+            _suspendRefresh = false;
+        }
+        SelectedRule = Rules.FirstOrDefault();
+        Refresh();
+    }
+
+    private void LoadPreset()
+    {
+        var preset = SelectedPreset is null ? null : _presets.Find(SelectedPreset);
+        if (preset is null) return;
+        if (Rules.Count > 0 && !Dialogs.Confirm(L.F("preset_replace_confirm", preset.Name))) return;
+        ReplaceRules(PresetStore.Clone(preset.Rules));
+    }
+
+    private void SavePreset()
+    {
+        if (Rules.Count == 0)
+        {
+            Dialogs.Info(L.T("preset_no_rules"));
+            return;
+        }
+        string? name = Dialogs.Prompt(L.T("preset_name_title"), L.T("preset_name_prompt"), SelectedPreset ?? "");
+        if (string.IsNullOrWhiteSpace(name)) return;
+        if (_presets.Find(name) is not null && !Dialogs.Confirm(L.F("preset_overwrite", name))) return;
+        _presets.Save(name, Rules);
+        ReloadPresetNames(name.Trim());
+    }
+
+    private void DeletePreset()
+    {
+        if (SelectedPreset is null || !Dialogs.Confirm(L.F("preset_delete_confirm", SelectedPreset))) return;
+        _presets.Delete(SelectedPreset);
+        ReloadPresetNames();
+    }
+
+    private void ExportPreset()
+    {
+        var preset = SelectedPreset is null ? null : _presets.Find(SelectedPreset);
+        if (preset is null) return;
+        string? path = Dialogs.SaveFile(L.T("preset_export"), preset.Name + ".gcpreset.json", PresetFilter);
+        if (path is null) return;
+        try
+        {
+            PresetStore.ExportToFile(preset, path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Dialogs.Error(ex.Message);
+        }
+    }
+
+    private void ImportPreset()
+    {
+        var files = Dialogs.PickFiles(L.T("preset_import"), PresetFilter);
+        if (files is null || files.Length == 0) return;
+        try
+        {
+            var preset = PresetStore.ImportFromFile(files[0]);
+            if (_presets.Find(preset.Name) is not null && !Dialogs.Confirm(L.F("preset_overwrite", preset.Name))) return;
+            _presets.Save(preset.Name, preset.Rules);
+            ReloadPresetNames(preset.Name);
+            Dialogs.Info(L.F("preset_imported", preset.Name));
+        }
+        catch (Exception ex) when (ex is InvalidDataException or IOException or UnauthorizedAccessException)
+        {
+            Dialogs.Error(ex.Message);
+        }
+    }
+
+    private static string PresetFilter => L.T("preset_filter") + " (*.json)|*.json|" + L.T("dlg_filter_all") + "|*.*";
 
     private void MoveRule(int delta)
     {
@@ -368,13 +490,7 @@ public sealed class RenamerViewModel : ObservableObject
         Refresh();
     }
 
-    private void Undo()
-    {
-        if (!Dialogs.Confirm(_service.UndoDescription + "?")) return;
-        var result = _service.Undo();
-        if (!result.Success)
-            Dialogs.Error(result.Error ?? L.T("err_unknown"));
-    }
+    private void Undo() => _service.UndoWithConfirmation();
 
     /// <summary>Tras renombrar o deshacer (aquí o en otra pestaña), actualiza las rutas de la lista.</summary>
     private void OnFilesChanged(IReadOnlyList<RenameOperation> executed)

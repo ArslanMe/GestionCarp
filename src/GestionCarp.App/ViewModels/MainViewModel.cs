@@ -23,6 +23,7 @@ public sealed class MainViewModel : ObservableObject
 
         Renamer = new RenamerViewModel(service);
         Subtitles = new SubtitlesViewModel(service);
+        Structure = new StructureViewModel(service);
         Explorer = new ExplorerViewModel(
             sendToRenamer: paths =>
             {
@@ -34,6 +35,11 @@ public sealed class MainViewModel : ObservableObject
                 Subtitles.FolderPath = folder;
                 Subtitles.Analyze();
                 SelectedTab = 2;
+            },
+            sendToStructure: (text, destination) =>
+            {
+                Structure.LoadTemplate(text, destination);
+                SelectedTab = 3;
             });
 
         ExitCommand = new RelayCommand(() => Application.Current.Shutdown());
@@ -41,6 +47,14 @@ public sealed class MainViewModel : ObservableObject
         CheckUpdatesCommand = new RelayCommand(() => _ = Updater.CheckAsync(silent: false));
         OpenGitHubCommand = new RelayCommand(() => AppInfo.OpenUrl(UpdateChecker.RepositoryUrl));
         AboutCommand = new RelayCommand(ShowAbout);
+        HelpCommand = new RelayCommand(() => HelpService.Open(SelectedTab switch
+        {
+            0 => "explorador",
+            1 => "renombrar",
+            2 => "subtitulos",
+            3 => "crear",
+            _ => "inicio",
+        }));
 
         Loc.Current.LanguageChanged += (_, _) =>
         {
@@ -50,18 +64,21 @@ public sealed class MainViewModel : ObservableObject
             Explorer.OnLanguageChanged();
             Renamer.OnLanguageChanged();
             Subtitles.OnLanguageChanged();
+            Structure.OnLanguageChanged();
         };
     }
 
     public ExplorerViewModel Explorer { get; }
     public RenamerViewModel Renamer { get; }
     public SubtitlesViewModel Subtitles { get; }
+    public StructureViewModel Structure { get; }
 
     public ICommand ExitCommand { get; }
     public ICommand SetLanguageCommand { get; }
     public ICommand CheckUpdatesCommand { get; }
     public ICommand OpenGitHubCommand { get; }
     public ICommand AboutCommand { get; }
+    public ICommand HelpCommand { get; }
 
     public int SelectedTab { get => _selectedTab; set => SetProperty(ref _selectedTab, value); }
 

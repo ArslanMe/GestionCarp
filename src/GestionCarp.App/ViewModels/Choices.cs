@@ -70,6 +70,9 @@ public static class Choices
         new Choice(TreeExportFormat.Text, "fmt_text"),
         new Choice(TreeExportFormat.Markdown, "fmt_md"),
         new Choice(TreeExportFormat.Json, "fmt_json"),
+        new Choice(TreeExportFormat.Html, "fmt_html"),
+        new Choice(TreeExportFormat.Excel, "fmt_excel"),
+        new Choice(TreeExportFormat.Word, "fmt_word"),
     };
 
     public static IReadOnlyList<Choice> SubtitleModes { get; } = new[]

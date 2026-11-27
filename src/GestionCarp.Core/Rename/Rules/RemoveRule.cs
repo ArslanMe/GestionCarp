@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GestionCarp.Core.Localization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -28,7 +29,7 @@ public sealed class RemoveRule : RenameRule
     private string _closeDelimiter = "]";
     private bool _cleanSpaces = true;
 
-    public override string DisplayName => L.T("rule_remove");
+    [JsonIgnore] public override string DisplayName => L.T("rule_remove");
 
     public RemoveMode Mode { get => _mode; set => SetProperty(ref _mode, value); }
     public int Count { get => _count; set => SetProperty(ref _count, Math.Max(0, value)); }
@@ -42,7 +43,7 @@ public sealed class RemoveRule : RenameRule
     /// <summary>Tras eliminar, quita espacios duplicados y los de los extremos.</summary>
     public bool CleanSpaces { get => _cleanSpaces; set => SetProperty(ref _cleanSpaces, value); }
 
-    public override string Summary => Mode switch
+    [JsonIgnore] public override string Summary => Mode switch
     {
         RemoveMode.LastChars => L.F("rem_sum_last", Count),
         RemoveMode.Range => L.F("rem_sum_range", Count, From),

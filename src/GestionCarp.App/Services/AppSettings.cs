@@ -15,6 +15,13 @@ public sealed class AppSettings
 
     public bool CheckUpdatesOnStartup { get; set; } = true;
 
+    /// <summary>Posición y tamaño de la ventana al cerrarla (en píxeles lógicos). Null = sin guardar.</summary>
+    public double? WindowLeft { get; set; }
+    public double? WindowTop { get; set; }
+    public double? WindowWidth { get; set; }
+    public double? WindowHeight { get; set; }
+    public bool WindowMaximized { get; set; }
+
     public static AppSettings Load()
     {
         try

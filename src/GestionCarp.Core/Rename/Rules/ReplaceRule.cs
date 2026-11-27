@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GestionCarp.Core.Localization;
 using System.Text.RegularExpressions;
 
@@ -12,7 +13,7 @@ public sealed class ReplaceRule : RenameRule
     private bool _replaceAll = true;
     private bool _useRegex;
 
-    public override string DisplayName => L.T("rule_replace");
+    [JsonIgnore] public override string DisplayName => L.T("rule_replace");
 
     public string Find { get => _find; set => SetProperty(ref _find, value ?? ""); }
     public string ReplaceWith { get => _replaceWith; set => SetProperty(ref _replaceWith, value ?? ""); }
@@ -20,7 +21,7 @@ public sealed class ReplaceRule : RenameRule
     public bool ReplaceAll { get => _replaceAll; set => SetProperty(ref _replaceAll, value); }
     public bool UseRegex { get => _useRegex; set => SetProperty(ref _useRegex, value); }
 
-    public override string Summary
+    [JsonIgnore] public override string Summary
         => Find.Length == 0 ? L.T("replace_sum_empty") : $"«{Find}» → «{ReplaceWith}»" + (UseRegex ? " (regex)" : "");
 
     protected override string ApplyCore(string text, RenameContext context)

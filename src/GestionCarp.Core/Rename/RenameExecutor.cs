@@ -15,6 +15,9 @@ public sealed class RenameBatch
 
     /// <summary>Operaciones en el orden en que se ejecutaron.</summary>
     public List<RenameOperation> Operations { get; set; } = new();
+
+    /// <summary>Carpetas y archivos creados (en orden de creación), para lotes de «Crear carpetas».</summary>
+    public List<string> CreatedPaths { get; set; } = new();
 }
 
 public sealed class RenameResult
@@ -22,6 +25,9 @@ public sealed class RenameResult
     public bool Success { get; init; }
     public string? Error { get; init; }
     public RenameBatch? Batch { get; init; }
+
+    /// <summary>Aviso informativo aunque la operación haya ido bien.</summary>
+    public string? Notice { get; init; }
 
     public IReadOnlyList<RenameOperation> Executed => Batch?.Operations ?? (IReadOnlyList<RenameOperation>)Array.Empty<RenameOperation>();
 }

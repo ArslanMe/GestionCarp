@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +21,7 @@ public sealed class ExplorerViewModel : ObservableObject
 
     private readonly Action<IEnumerable<string>> _sendToRenamer;
     private readonly Action<string> _sendToSubtitles;
+    private readonly Action<string, string?> _sendToStructure;
 
     private string _rootPath = "";
     private int _maxDepth;
@@ -43,15 +43,17 @@ public sealed class ExplorerViewModel : ObservableObject
     private CancellationTokenSource? _cts;
     private double _scanSeconds;
 
-    public ExplorerViewModel(Action<IEnumerable<string>> sendToRenamer, Action<string> sendToSubtitles)
+    public ExplorerViewModel(Action<IEnumerable<string>> sendToRenamer, Action<string> sendToSubtitles, Action<string, string?> sendToStructure)
     {
         _sendToRenamer = sendToRenamer;
         _sendToSubtitles = sendToSubtitles;
+        _sendToStructure = sendToStructure;
 
         BrowseCommand = new RelayCommand(Browse, () => !IsScanning);
         ScanCommand = new RelayCommand(() => _ = ScanAsync(), () => !IsScanning && !string.IsNullOrWhiteSpace(RootPath));
         CancelCommand = new RelayCommand(() => _cts?.Cancel(), () => IsScanning);
-        CopyCommand = new RelayCommand(Copy, () => _root is not null);
+        CopyCommand = new RelayCommand(Copy, () => _root is not null && !TreeExporter.IsBinary(ExportFormat));
+        UseAsTemplateCommand = new RelayCommand(UseAsTemplate, () => _root is not null);
         SaveCommand = new RelayCommand(Save, () => _root is not null);
         SendToRenamerCommand = new RelayCommand(SendToRenamer, () => _root is not null);
         SendToSubtitlesCommand = new RelayCommand(SendToSubtitles, () => _root is not null);
@@ -68,6 +70,7 @@ public sealed class ExplorerViewModel : ObservableObject
     public ICommand SendToRenamerCommand { get; }
     public ICommand SendToSubtitlesCommand { get; }
     public ICommand OpenInExplorerCommand { get; }
+    public ICommand UseAsTemplateCommand { get; }
 
     // ---------- Opciones de análisis ----------
 
@@ -96,8 +99,9 @@ public sealed class ExplorerViewModel : ObservableObject
 
     public string ExportTitle => ExportRoot is { } root
         ? (ReferenceEquals(root, _root)
-            ? L.T("exp_export_root")
-            : L.F("exp_export_selected", root.Name))
+              ? L.T("exp_export_root")
+              : L.F("exp_export_selected", root.Name))
+          + (TreeExporter.IsBinary(ExportFormat) ? "\n" + L.T("exp_binary_preview") : "")
         : "";
 
     /// <summary>Exporta la carpeta seleccionada en el árbol, o la raíz si no hay selección.</summary>
@@ -226,6 +230,9 @@ public sealed class ExplorerViewModel : ObservableObject
         {
             TreeExportFormat.Markdown => "Markdown (*.md)|*.md",
             TreeExportFormat.Json => "JSON (*.json)|*.json",
+            TreeExportFormat.Html => "HTML (*.html)|*.html",
+            TreeExportFormat.Excel => "Excel (*.xlsx)|*.xlsx",
+            TreeExportFormat.Word => "Word (*.docx)|*.docx",
             _ => L.T("exp_filter_text") + " (*.txt)|*.txt",
         };
         string name = L.F("exp_save_name", FileNameSafe(root.Name)) + ext;
@@ -233,7 +240,7 @@ public sealed class ExplorerViewModel : ObservableObject
         if (path is null) return;
         try
         {
-            File.WriteAllText(path, BuildExport(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            TreeExporter.SaveToFile(root, CurrentExportOptions(), path);
             Status = L.F("exp_saved", path);
         }
         catch (Exception ex)
@@ -271,6 +278,20 @@ public sealed class ExplorerViewModel : ObservableObject
         {
             Dialogs.Error(ex.Message);
         }
+    }
+
+    /// <summary>Lleva las carpetas de la estructura a «Crear carpetas» para repetirla en otro sitio.</summary>
+    private void UseAsTemplate()
+    {
+        var root = ExportRoot;
+        if (root is null) return;
+        string text = TreeExporter.Export(root, new TreeExportOptions
+        {
+            Format = TreeExportFormat.Text,
+            IncludeFiles = false,
+            MaxDepth = ExportDepth,
+        });
+        _sendToStructure(text, Path.GetDirectoryName(root.FullPath));
     }
 
     private void SendToSubtitles()

@@ -10,8 +10,10 @@ para que el reproductor los cargue solo.
 - Árbol completo de cualquier carpeta, con tamaño, número de archivos y subcarpetas.
 - Filtros: profundidad, mostrar u ocultar archivos, ocultos/sistema, carpetas a excluir (`.git; node_modules`)
   y tipos de archivo (`*.mkv; *.mp4`).
-- Exportación en **texto (árbol)**, **Markdown** o **JSON**, con tamaños, fechas y totales opcionales.
+- Exportación en **texto (árbol)**, **Markdown**, **JSON**, **HTML** (página con carpetas plegables),
+  **Excel** (.xlsx, una fila por elemento con filtros) y **Word** (.docx), con tamaños, fechas y totales opcionales.
   Botón **Copiar al portapapeles** y **Guardar como…**. Si seleccionas una subcarpeta, se exporta solo esa.
+- **Usar como plantilla**: lleva las carpetas a la pestaña *Crear carpetas* para repetir la estructura en otro sitio.
 
   ```
   Mi Serie/
@@ -25,8 +27,13 @@ para que el reproductor los cargue solo.
 - Reglas encadenables con **vista previa en tiempo real**:
   - **Numerar**: `Mi Serie - Cap` + `01, 02, 03…` (inicio, incremento, cifras, al principio/final o
     sustituyendo el nombre, reinicio por carpeta para temporadas).
+  - **Plantilla de series**: `{serie} - T{temp:00}E{ep:00} - {titulo}` → `Mi Serie - T01E05 - Piloto`.
+    Detecta temporada y episodio en el nombre (o la temporada en carpetas como `Temporada 2`).
+  - **Limpiar nombres**: `[Grupo] Mi.Serie.S01E02.1080p.WEB-DL.x264-XYZ` → `Mi Serie S01E02`.
   - **Reemplazar** (texto o expresión regular), **Insertar**, **Eliminar** (primeros/últimos caracteres,
     un tramo o todo lo que hay entre `[` `]`), **Mayúsculas/minúsculas**.
+- **Presets**: guarda combinaciones de reglas con un nombre, cárgalas con un clic y expórtalas a un archivo
+  para compartirlas. Incluye presets de ejemplo.
   - Cada regla puede aplicarse al nombre, a la extensión o a ambos.
 - **Orden natural** (`cap2` antes que `cap10`) y reordenación manual.
 - Detección de errores antes de tocar nada: nombres duplicados, caracteres no válidos en Windows, nombres
@@ -44,11 +51,19 @@ Para cuando los subtítulos tienen nombres distintos a los vídeos (por ejemplo,
 - Conserva o añade la etiqueta de idioma, y saca los subtítulos de carpetas `Subs` para dejarlos junto al vídeo.
 - Puedes desmarcar los que no quieras tocar; también se puede deshacer.
 
+### 🧱 Crear carpetas
+- Pega un árbol (el que exporta GestionCarp), una lista con sangría, Markdown o JSON y se crea esa estructura
+  dentro de la carpeta que elijas. Vista previa con lo que se creará, lo que ya existe y los nombres no válidos.
+- Opcionalmente crea también los archivos (vacíos). Se puede **deshacer**: borra solo lo creado que siga vacío.
+
 ### General
 - Interfaz en **español, inglés y portugués** (menú *Idioma*); el cambio es inmediato y se recuerda.
 - **Buscar actualizaciones** (menú *Ayuda*): compara tu versión con la última publicada en GitHub y, si hay una
   nueva, la descarga, sustituye el programa y lo reinicia. Puede comprobarse automáticamente al iniciar.
 - Ventana **Acerca de** con la versión instalada y el autor.
+- **Guía de uso** integrada (menú *Ayuda* o tecla <kbd>F1</kbd>): se abre en el navegador sin conexión, en el
+  apartado de la pestaña en la que estés y en el idioma elegido.
+- La ventana se adapta al tamaño de la pantalla la primera vez y recuerda su tamaño y posición.
 
 ## Descargar
 
@@ -78,8 +93,6 @@ dotnet run --project src/GestionCarp.App
 
 ## Próximas fases
 
-- Presets de reglas guardados, plantilla de series `{nombre} T{temp}E{ep}`, limpieza automática de nombres.
-- Exportar a HTML, Excel y Word; crear carpetas a partir de un árbol pegado.
 - Menú contextual del Explorador de Windows, comparar carpetas, duplicados, renombrar por metadatos.
 
 ## Autor y licencia

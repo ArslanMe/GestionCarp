@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GestionCarp.Core.Localization;
 using System.Globalization;
 
@@ -24,7 +25,7 @@ public sealed class NumberingRule : RenameRule
     private int _digits = 2;
     private bool _restartPerFolder;
 
-    public override string DisplayName => L.T("rule_num");
+    [JsonIgnore] public override string DisplayName => L.T("rule_num");
 
     public NumberPlacement Placement { get => _placement; set => SetProperty(ref _placement, value); }
     public string TextBefore { get => _textBefore; set => SetProperty(ref _textBefore, value ?? ""); }
@@ -38,7 +39,7 @@ public sealed class NumberingRule : RenameRule
     /// <summary>Reinicia la numeración en cada carpeta (útil para temporadas).</summary>
     public bool RestartPerFolder { get => _restartPerFolder; set => SetProperty(ref _restartPerFolder, value); }
 
-    public override string Summary
+    [JsonIgnore] public override string Summary
     {
         get
         {

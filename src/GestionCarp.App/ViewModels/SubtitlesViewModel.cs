@@ -181,13 +181,7 @@ public sealed class SubtitlesViewModel : ObservableObject
         else Summary = L.T("sub_initial");
     }
 
-    private void Undo()
-    {
-        if (!Dialogs.Confirm(_service.UndoDescription + "?")) return;
-        var result = _service.Undo();
-        if (!result.Success)
-            Dialogs.Error(result.Error ?? L.T("err_unknown"));
-    }
+    private void Undo() => _service.UndoWithConfirmation();
 }
 
 public sealed class SubtitleRowViewModel : ObservableObject

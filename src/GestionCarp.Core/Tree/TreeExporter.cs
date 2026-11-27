@@ -12,6 +12,9 @@ public enum TreeExportFormat
     Text,
     Markdown,
     Json,
+    Html,
+    Excel,
+    Word,
 }
 
 public sealed class TreeExportOptions
@@ -31,20 +34,106 @@ public sealed class TreeExportOptions
 /// <summary>Convierte un árbol en texto para copiar, pegar o guardar.</summary>
 public static class TreeExporter
 {
+    /// <summary>Exporta a texto. Para Excel y Word (binarios) devuelve el árbol en texto como vista previa.</summary>
     public static string Export(TreeNode root, TreeExportOptions options) => options.Format switch
     {
-        TreeExportFormat.Text => ToText(root, options),
         TreeExportFormat.Markdown => ToMarkdown(root, options),
         TreeExportFormat.Json => ToJson(root, options),
-        _ => throw new ArgumentOutOfRangeException(nameof(options)),
+        TreeExportFormat.Html => ToHtml(root, options),
+        _ => ToText(root, options),
     };
+
+    /// <summary>Formatos que solo se pueden guardar en archivo (no copiar como texto).</summary>
+    public static bool IsBinary(TreeExportFormat format) => format is TreeExportFormat.Excel or TreeExportFormat.Word;
 
     public static string FileExtension(TreeExportFormat format) => format switch
     {
         TreeExportFormat.Markdown => ".md",
         TreeExportFormat.Json => ".json",
+        TreeExportFormat.Html => ".html",
+        TreeExportFormat.Excel => ".xlsx",
+        TreeExportFormat.Word => ".docx",
         _ => ".txt",
     };
+
+    /// <summary>Guarda la exportación en un archivo, en el formato indicado.</summary>
+    public static void SaveToFile(TreeNode root, TreeExportOptions options, string path)
+    {
+        switch (options.Format)
+        {
+            case TreeExportFormat.Excel:
+            {
+                using var file = File.Create(path);
+                OfficeExporter.WriteXlsx(root, options, file);
+                break;
+            }
+            case TreeExportFormat.Word:
+            {
+                using var file = File.Create(path);
+                OfficeExporter.WriteDocx(root, options, file);
+                break;
+            }
+            default:
+                File.WriteAllText(path, Export(root, options), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+                break;
+        }
+    }
+
+    // ---------- HTML (página con carpetas plegables) ----------
+
+    private static string ToHtml(TreeNode root, TreeExportOptions options)
+    {
+        string title = root.Name.TrimEnd('/', '\\');
+        var sb = new StringBuilder();
+        sb.AppendLine("<!DOCTYPE html>")
+          .AppendLine($"<html lang=\"{Loc.Code(Loc.Current.Language)}\">")
+          .AppendLine("<head>")
+          .AppendLine("<meta charset=\"utf-8\">")
+          .AppendLine("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">")
+          .AppendLine($"<title>{Html(title)}</title>")
+          .AppendLine("<style>")
+          .AppendLine(":root{--bg:#fff;--fg:#1f2937;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}")
+          .AppendLine("@media (prefers-color-scheme:dark){:root{--bg:#111827;--fg:#e5e7eb;--muted:#9ca3af;--line:#374151;--accent:#60a5fa}}")
+          .AppendLine("body{margin:0;padding:24px 16px;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif}")
+          .AppendLine("main{max-width:960px;margin:0 auto}h1{font-size:22px;margin:0 0 4px}.meta{color:var(--muted);margin:0 0 16px}")
+          .AppendLine(".tools button{font:inherit;padding:4px 10px;margin-right:6px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--fg);cursor:pointer}")
+          .AppendLine("ul{list-style:none;margin:0;padding-left:20px;border-left:1px solid var(--line)}main>ul{border:0;padding:0;margin-top:12px}")
+          .AppendLine("li{margin:2px 0;overflow-wrap:anywhere}summary{cursor:pointer;font-weight:600}summary::marker{color:var(--accent)}")
+          .AppendLine(".d{color:var(--muted);font-size:13px;font-weight:400;margin-left:8px}footer{margin-top:24px;color:var(--muted);font-size:12px}")
+          .AppendLine("</style>")
+          .AppendLine("</head>")
+          .AppendLine("<body><main>")
+          .AppendLine($"<h1>📁 {Html(title)}</h1>")
+          .AppendLine($"<p class=\"meta\">{Html(L.F("doc_summary", root.FolderCount, root.FileCount, SizeFormatter.Format(root.Size), DateTime.Now.ToString("g", Loc.Current.Culture)))}</p>")
+          .AppendLine($"<div class=\"tools\"><button onclick=\"document.querySelectorAll('details').forEach(d=>d.open=true)\">{Html(L.T("html_expand"))}</button>" +
+                      $"<button onclick=\"document.querySelectorAll('details').forEach(d=>d.open=false)\">{Html(L.T("html_collapse"))}</button></div>")
+          .AppendLine("<ul>");
+        WriteHtml(root, depth: 0, options, sb);
+        sb.AppendLine("</ul>")
+          .AppendLine("<footer>GestionCarp</footer>")
+          .AppendLine("</main></body></html>");
+        return sb.ToString();
+    }
+
+    private static void WriteHtml(TreeNode node, int depth, TreeExportOptions options, StringBuilder sb)
+    {
+        string details = Details(node, options).Trim();
+        string detailsHtml = details.Length == 0 ? "" : $"<span class=\"d\">{Html(details.Trim('(', ')'))}</span>";
+        if (!node.IsDirectory)
+        {
+            sb.AppendLine($"<li>📄 {Html(node.Name)}{detailsHtml}</li>");
+            return;
+        }
+
+        bool beyondDepth = options.MaxDepth > 0 && depth + 1 > options.MaxDepth;
+        var children = beyondDepth ? new List<TreeNode>() : VisibleChildren(node, options);
+        sb.AppendLine($"<li><details{(depth < 2 ? " open" : "")}><summary>📁 {Html(node.Name.TrimEnd('/', '\\'))}{detailsHtml}</summary><ul>");
+        foreach (var child in children) WriteHtml(child, depth + 1, options, sb);
+        if (node.IsTruncated || (beyondDepth && node.Children.Count > 0)) sb.AppendLine("<li>…</li>");
+        sb.AppendLine("</ul></details></li>");
+    }
+
+    private static string Html(string text) => System.Net.WebUtility.HtmlEncode(text);
 
     // ---------- Texto con líneas (estilo "tree") ----------
 

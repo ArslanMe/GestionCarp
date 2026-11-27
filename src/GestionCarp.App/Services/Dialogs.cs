@@ -43,6 +43,38 @@ public static class Dialogs
     public static bool Confirm(string message)
         => Message(message, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
 
+    /// <summary>Pide un texto al usuario. Devuelve null si cancela.</summary>
+    public static string? Prompt(string title, string message, string initial = "")
+    {
+        var input = new System.Windows.Controls.TextBox { Text = initial, Margin = new Thickness(0, 8, 0, 14), Padding = new Thickness(3, 2, 3, 2) };
+        var ok = new System.Windows.Controls.Button { Content = L.T("dlg_ok"), IsDefault = true, MinWidth = 80, Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(10, 4, 10, 4) };
+        var cancel = new System.Windows.Controls.Button { Content = L.T("btn_cancel"), IsCancel = true, MinWidth = 80, Padding = new Thickness(10, 4, 10, 4) };
+        var buttons = new System.Windows.Controls.StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+        buttons.Children.Add(ok);
+        buttons.Children.Add(cancel);
+        var panel = new System.Windows.Controls.StackPanel { Margin = new Thickness(18) };
+        panel.Children.Add(new System.Windows.Controls.TextBlock { Text = message, TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(input);
+        panel.Children.Add(buttons);
+
+        var window = new Window
+        {
+            Title = title,
+            Content = panel,
+            Width = 420,
+            SizeToContent = SizeToContent.Height,
+            ResizeMode = ResizeMode.NoResize,
+            WindowStartupLocation = Owner is null ? WindowStartupLocation.CenterScreen : WindowStartupLocation.CenterOwner,
+            ShowInTaskbar = false,
+            Owner = Owner,
+            FontFamily = new System.Windows.Media.FontFamily("Segoe UI"),
+            FontSize = 13,
+        };
+        ok.Click += (_, _) => window.DialogResult = true;
+        window.Loaded += (_, _) => { input.Focus(); input.SelectAll(); };
+        return window.ShowDialog() == true ? input.Text.Trim() : null;
+    }
+
     private static Window? Owner => Application.Current?.MainWindow is { IsLoaded: true } w ? w : null;
 
     private static bool Show(CommonDialog dialog)

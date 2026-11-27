@@ -5,11 +5,14 @@
         xmlns:l="clr-namespace:GestionCarp.App.Localization"
         Title="{l:Tr app_title}"
         Icon="/Assets/app.ico"
-        Height="780" Width="1240" MinHeight="560" MinWidth="960"
-        WindowStartupLocation="CenterScreen"
+        Height="700" Width="1180" MinHeight="480" MinWidth="820"
+        WindowStartupLocation="Manual"
         FontFamily="Segoe UI" FontSize="13"
         UseLayoutRounding="True" TextOptions.TextFormattingMode="Display"
-        Loaded="OnLoaded">
+        Loaded="OnLoaded" Closing="OnClosing">
+    <Window.InputBindings>
+        <KeyBinding Key="F1" Command="{Binding HelpCommand}"/>
+    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top" Padding="4,2" Background="{StaticResource PanelBrush}">
             <MenuItem Header="{l:Tr menu_file}">
@@ -24,6 +27,8 @@
                           Command="{Binding SetLanguageCommand}" CommandParameter="pt"/>
             </MenuItem>
             <MenuItem Header="{l:Tr menu_help}">
+                <MenuItem Header="{l:Tr menu_guide}" Command="{Binding HelpCommand}" InputGestureText="F1"/>
+                <Separator/>
                 <MenuItem Header="{l:Tr menu_check_updates}" Command="{Binding CheckUpdatesCommand}"/>
                 <MenuItem Header="{l:Tr menu_check_startup}" IsCheckable="True" IsChecked="{Binding CheckUpdatesOnStartup}"/>
                 <Separator/>
@@ -41,6 +46,9 @@
             </TabItem>
             <TabItem Header="{l:Tr tab_subs}" Padding="12,4">
                 <views:SubtitlesView DataContext="{Binding Subtitles}"/>
+            </TabItem>
+            <TabItem Header="{l:Tr tab_struct}" Padding="12,4">
+                <views:StructureView DataContext="{Binding Structure}"/>
             </TabItem>
         </TabControl>
     </DockPanel>
