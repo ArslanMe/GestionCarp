@@ -17,6 +17,7 @@
     <Authors>Raudel Camacho</Authors>
     <Company>Raudel Camacho</Company>
     <Copyright>© 2026 Raudel Camacho</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Explorador de carpetas, exportación de estructuras y renombrado por lotes.</Description>
   </PropertyGroup>
 

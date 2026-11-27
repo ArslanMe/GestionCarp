@@ -21,6 +21,7 @@
             <Run Text="{l:Tr about_created_by}"/><Run Text=" "/><Run x:Name="AuthorRun" FontWeight="SemiBold"/>
         </TextBlock>
         <TextBlock x:Name="CopyrightText" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+        <TextBlock Text="{l:Tr about_license}" Foreground="{StaticResource MutedBrush}"/>
         <TextBlock Margin="0,8,0,0">
             <Hyperlink x:Name="RepoLink" Click="OnRepoClick"><Run x:Name="RepoRun"/></Hyperlink>
         </TextBlock>

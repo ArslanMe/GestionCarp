@@ -43,6 +43,7 @@ internal static class Strings
             "Explore pastas, compartilhe sua estrutura e renomeie arquivos em lote, junto com as legendas de cada episódio.",
         },
         ["about_created_by"] = new[] { "Creado por", "Created by", "Criado por" },
+        ["about_license"] = new[] { "Publicado con licencia MIT", "Released under the MIT License", "Publicado sob a licença MIT" },
         ["about_close"] = new[] { "Cerrar", "Close", "Fechar" },
         ["about_check"] = new[] { "Buscar actualizaciones", "Check for updates", "Procurar atualizações" },
 
