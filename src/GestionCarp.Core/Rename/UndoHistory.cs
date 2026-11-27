@@ -28,7 +28,7 @@ public sealed class UndoHistory
 
     public void Push(RenameBatch batch)
     {
-        if (batch.Operations.Count == 0 && batch.CreatedPaths.Count == 0) return;
+        if (batch.Operations.Count == 0 && batch.CreatedPaths.Count == 0 && batch.CopiedFiles.Count == 0) return;
         _batches.Add(batch);
         if (_batches.Count > MaxEntries)
             _batches.RemoveRange(0, _batches.Count - MaxEntries);
@@ -40,7 +40,9 @@ public sealed class UndoHistory
     public RenameResult UndoLast()
     {
         var batch = Last ?? throw new InvalidOperationException(L.T("hist_empty"));
-        var result = batch.CreatedPaths.Count > 0 ? Structure.StructureBuilder.Undo(batch) : RenameExecutor.Undo(batch);
+        var result = batch.CopiedFiles.Count > 0 ? UndoCopy(batch)
+            : batch.CreatedPaths.Count > 0 ? Structure.StructureBuilder.Undo(batch)
+            : RenameExecutor.Undo(batch);
         if (result.Success)
         {
             _batches.RemoveAt(_batches.Count - 1);
@@ -48,6 +50,17 @@ public sealed class UndoHistory
             Changed?.Invoke(this, EventArgs.Empty);
         }
         return result;
+    }
+
+    private static RenameResult UndoCopy(RenameBatch batch)
+    {
+        int kept = Compare.FolderCopier.Undo(batch);
+        return new RenameResult
+        {
+            Success = true,
+            Batch = new RenameBatch { Description = Localization.L.F("exec_undo_prefix", batch.Description) },
+            Notice = kept > 0 ? Localization.L.F("struct_undo_kept", kept) : null,
+        };
     }
 
     private void Load()

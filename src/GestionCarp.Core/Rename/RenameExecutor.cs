@@ -7,6 +7,9 @@ public sealed record RenameOperation(string SourcePath, string TargetPath, bool 
     public RenameOperation Reverse() => new(TargetPath, SourcePath, IsDirectory);
 }
 
+/// <summary>Un archivo copiado y su tamaño, para poder deshacer la copia sin borrar algo que haya cambiado.</summary>
+public sealed record CopiedFile(string Path, long Length);
+
 /// <summary>Un grupo de cambios realizados juntos; es la unidad que se puede deshacer.</summary>
 public sealed class RenameBatch
 {
@@ -18,6 +21,9 @@ public sealed class RenameBatch
 
     /// <summary>Carpetas y archivos creados (en orden de creación), para lotes de «Crear carpetas».</summary>
     public List<string> CreatedPaths { get; set; } = new();
+
+    /// <summary>Archivos copiados (por ejemplo, al completar una carpeta desde «Comparar»).</summary>
+    public List<CopiedFile> CopiedFiles { get; set; } = new();
 }
 
 public sealed class RenameResult

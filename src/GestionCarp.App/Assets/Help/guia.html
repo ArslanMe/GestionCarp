@@ -63,9 +63,13 @@ article{display:none}article.on{display:block}
     <li><a href="#es-renombrar">✏️ Renombrar</a></li>
     <li><a href="#es-reglas">Las reglas, una a una</a></li>
     <li><a href="#es-series">Plantilla de series</a></li>
+    <li><a href="#es-metadatos">Renombrar por metadatos</a></li>
     <li><a href="#es-presets">Presets</a></li>
     <li><a href="#es-subtitulos">💬 Subtítulos</a></li>
     <li><a href="#es-crear">🧱 Crear carpetas</a></li>
+    <li><a href="#es-comparar">⚖️ Comparar carpetas</a></li>
+    <li><a href="#es-duplicados">👯 Duplicados</a></li>
+    <li><a href="#es-integracion">Menú contextual de Windows</a></li>
     <li><a href="#es-deshacer">↶ Deshacer y seguridad</a></li>
     <li><a href="#es-ajustes">Idioma y actualizaciones</a></li>
     <li><a href="#es-faq">Preguntas frecuentes</a></li>
@@ -75,13 +79,15 @@ article{display:none}article.on{display:block}
 <section id="es-inicio">
   <h1>Guía de GestionCarp</h1>
   <p class="lead">Explora carpetas, comparte su estructura, renombra archivos por lotes y deja los subtítulos listos para el reproductor.</p>
-  <p>La aplicación tiene cuatro pestañas:</p>
+  <p>La aplicación tiene seis pestañas:</p>
   <table>
     <tr><th>Pestaña</th><th>Para qué sirve</th></tr>
     <tr><td class="ui">📁 Explorador y exportar</td><td>Ver el árbol de una carpeta y copiarlo o guardarlo (texto, Markdown, JSON, HTML, Excel, Word).</td></tr>
     <tr><td class="ui">✏️ Renombrar</td><td>Cambiar el nombre de muchos archivos a la vez con reglas: numerar, plantilla de series, limpiar, reemplazar…</td></tr>
     <tr><td class="ui">💬 Subtítulos</td><td>Poner a cada subtítulo el nombre de su capítulo para que el reproductor lo cargue solo.</td></tr>
     <tr><td class="ui">🧱 Crear carpetas</td><td>Crear de golpe una estructura de carpetas escrita o pegada como texto.</td></tr>
+    <tr><td class="ui">⚖️ Comparar</td><td>Ver qué falta o qué es distinto entre dos carpetas y copiar lo que falta.</td></tr>
+    <tr><td class="ui">👯 Duplicados</td><td>Encontrar archivos idénticos y liberar espacio enviando las copias a la Papelera.</td></tr>
   </table>
   <div class="tip">Puedes <b>arrastrar</b> carpetas y archivos desde el Explorador de Windows a cualquier pestaña. Pulsa <kbd>F1</kbd> para abrir esta guía en el apartado de la pestaña en la que estés.</div>
   <div class="tip">Nada se cambia en el disco sin que veas antes una <b>vista previa</b> y lo confirmes, y todo se puede <b>deshacer</b>.</div>
@@ -148,6 +154,7 @@ article{display:none}article.on{display:block}
     <tr><th>Regla</th><th>Qué hace</th><th>Ejemplo</th></tr>
     <tr><td class="ui">Numerar</td><td>Pone un número: sustituyendo el nombre, al principio o al final. Elige texto antes/después, inicio, incremento y cifras. <i>Reiniciar en cada carpeta</i> sirve para temporadas.</td><td><code>x.mkv</code> → <code>Mi Serie - Cap01.mkv</code></td></tr>
     <tr><td class="ui">Plantilla de series</td><td>Construye el nombre con temporada, episodio y título detectados. <a href="#es-series">Ver detalle</a>.</td><td><code>show.s01e05.mkv</code> → <code>Show - T01E05.mkv</code></td></tr>
+    <tr><td class="ui">Metadatos</td><td>Usa datos internos del archivo: fecha de la foto, cámara, artista, título, pista… <a href="#es-metadatos">Ver detalle</a>.</td><td><code>IMG_4821.jpg</code> → <code>2023-07-15 18.30.05.jpg</code></td></tr>
     <tr><td class="ui">Limpiar nombres</td><td>Quita <code>[grupos]</code>, etiquetas de calidad (<code>1080p</code>, <code>WEB-DL</code>, <code>x264</code>…), el grupo final <code>-XYZ</code> y convierte puntos y <code>_</code> en espacios.</td><td><code>[G] Mi.Serie.S01E02.1080p-XYZ</code> → <code>Mi Serie S01E02</code></td></tr>
     <tr><td class="ui">Reemplazar</td><td>Busca un texto y lo cambia por otro. Opciones: todas las veces, distinguir mayúsculas, expresión regular (con <code>$1</code>, <code>$2</code>…).</td><td><code>Mi.Serie</code> → <code>Mi Serie</code></td></tr>
     <tr><td class="ui">Insertar</td><td>Añade texto al principio, al final o tras N caracteres.</td><td><code>a.mkv</code> → <code>[HD] a.mkv</code></td></tr>
@@ -176,6 +183,26 @@ article{display:none}article.on{display:block}
   <div class="ex"><code>breaking.bad.s01e05.gray.matter.720p.mkv</code><span>→</span><code>breaking bad - T01E05 - gray matter.mkv</code></div>
   <div class="ex"><code>Mi Serie/Temporada 3/Cap 4.mkv</code><span>→</span><code>Mi Serie - T03E04.mkv</code></div>
   <div class="tip warn">Si en un nombre no se encuentra el episodio, esa fila sale en rojo y no se toca.</div>
+</section>
+
+<section id="es-metadatos">
+  <h2>Renombrar por metadatos</h2>
+  <p>La regla <span class="ui">Metadatos</span> lee la información que guardan dentro los archivos y la usa en el nombre. Ideal para ordenar fotos por fecha o música por pista.</p>
+  <table>
+    <tr><th>Marcador</th><th>Dato</th><th>Archivos</th></tr>
+    <tr><td><code>{fecha}</code></td><td>Fecha en que se tomó la foto o se grabó el vídeo (si no la hay, la de modificación)</td><td>JPEG, MP4, MOV</td></tr>
+    <tr><td><code>{modificado}</code> <code>{creado}</code></td><td>Fechas del archivo</td><td>Todos</td></tr>
+    <tr><td><code>{camara}</code></td><td>Marca y modelo de la cámara</td><td>JPEG</td></tr>
+    <tr><td><code>{ancho}</code> <code>{alto}</code> <code>{resolucion}</code></td><td>Dimensiones (<code>1920x1080</code>)</td><td>JPEG, PNG, MP4</td></tr>
+    <tr><td><code>{artista}</code> <code>{album}</code> <code>{titulo}</code> <code>{genero}</code></td><td>Etiquetas de la canción o el vídeo</td><td>MP3, FLAC, M4A, MP4</td></tr>
+    <tr><td><code>{pista}</code> <code>{año}</code></td><td>Número de pista y año</td><td>MP3, FLAC, M4A</td></tr>
+    <tr><td><code>{duracion}</code></td><td>Duración (<code>3m25s</code>)</td><td>FLAC, M4A, MP4</td></tr>
+    <tr><td><code>{nombre}</code> <code>{n}</code></td><td>Nombre actual y posición en la lista</td><td>Todos</td></tr>
+  </table>
+  <p>Formatos: fechas con <code>{fecha:yyyy-MM-dd HH.mm.ss}</code> (<code>yyyy</code> año, <code>MM</code> mes, <code>dd</code> día, <code>HH.mm.ss</code> hora) y números con ceros: <code>{pista:00}</code>.</p>
+  <div class="ex"><code>IMG_4821.jpg</code><span>→</span><code>2023-07-15 18.30.05.jpg</code></div>
+  <div class="ex"><code>track03.mp3</code><span>→</span><code>03 - Mi Canción.mp3</code></div>
+  <div class="tip warn">Si a un archivo le falta un dato, sale en rojo y no se renombra. Marca <span class="ui">Si falta un dato, dejarlo vacío</span> para renombrarlo igualmente.</div>
 </section>
 
 <section id="es-presets">
@@ -220,12 +247,52 @@ article{display:none}article.on{display:block}
   <div class="tip">Para copiar la estructura de una carpeta que ya tienes: en el Explorador, analízala y pulsa <span class="ui">Usar como plantilla</span>.</div>
 </section>
 
+<section id="es-comparar">
+  <h2>⚖️ Comparar carpetas</h2>
+  <p>Útil para saber si una copia de seguridad está completa o qué capítulos te faltan en otro disco.</p>
+  <ol class="steps">
+    <li>Elige (o arrastra) la <span class="ui">Carpeta A</span> y la <span class="ui">Carpeta B</span>. Con <span class="ui">⇅</span> las intercambias.</li>
+    <li>Elige cuándo considerar dos archivos iguales: <b>mismo nombre y tamaño</b> (rápido), <b>además la misma fecha</b>, o <b>mismo contenido</b> (exacto, lee los archivos enteros).</li>
+    <li>Pulsa <span class="ui">Comparar</span>.</li>
+  </ol>
+  <p><span class="chip wa">≠ distintos</span> <span class="chip ok">◀ solo en A</span> <span class="chip ok">▶ solo en B</span> <span class="chip un">= iguales</span> — por defecto solo se ven las diferencias; usa las casillas de <span class="ui">Mostrar</span> para filtrar.</p>
+  <ul>
+    <li><span class="ui">Copiar a B lo que le falta</span> (o a A): copia lo que solo está en la otra carpeta. <b>Nunca sobrescribe</b> nada y se puede deshacer.</li>
+    <li><span class="ui">Copiar informe</span>: pone la lista de diferencias en el portapapeles.</li>
+  </ul>
+</section>
+
+<section id="es-duplicados">
+  <h2>👯 Buscar duplicados</h2>
+  <p>Encuentra archivos con <b>exactamente el mismo contenido</b>, aunque tengan otro nombre o estén en otra carpeta.</p>
+  <ol class="steps">
+    <li>Añade (o arrastra) una o varias carpetas.</li>
+    <li>Opcional: <span class="ui">Tamaño mínimo</span> (para ignorar archivos pequeños), <span class="ui">Solo archivos</span> (por ejemplo <code>*.jpg; *.mp4</code>) y <span class="ui">Excluir</span>.</li>
+    <li>Pulsa <span class="ui">Buscar duplicados</span>. Verás los grupos de copias, ordenados por el espacio que ocupan de más.</li>
+    <li>Marca las copias que sobran: a mano, o elige qué <span class="ui">Conservar en cada grupo</span> (el más antiguo, el más reciente o el de ruta más corta) y pulsa <span class="ui">Marcar el resto</span>.</li>
+    <li>Pulsa <span class="ui">Enviar marcados a la Papelera</span>.</li>
+  </ol>
+  <div class="tip">Nada se borra definitivamente: los archivos van a la <b>Papelera de reciclaje</b> y desde allí puedes restaurarlos. GestionCarp no te deja marcar todas las copias de un grupo.</div>
+  <p>Con <span class="ui">📂</span> abres la carpeta de cada archivo para revisarlo.</p>
+</section>
+
+<section id="es-integracion">
+  <h2>Menú contextual de Windows</h2>
+  <p>En <span class="ui">Archivo → Añadir GestionCarp al menú contextual del Explorador</span> activas el acceso directo desde el clic derecho:</p>
+  <ul>
+    <li><b>En una carpeta</b> (o en el fondo de una carpeta abierta): submenú <span class="ui">GestionCarp</span> con Explorar y exportar, Renombrar el contenido, Emparejar subtítulos, Comparar con…, Buscar duplicados y Crear carpetas aquí.</li>
+    <li><b>En archivos</b>: <span class="ui">Renombrar con GestionCarp</span>. Si seleccionas varios, todos llegan a la misma lista.</li>
+    <li><b>Comparar con…</b>: úsalo en la primera carpeta y luego en la segunda; se comparan solas.</li>
+  </ul>
+  <div class="tip">En <b>Windows 11</b> estas opciones están dentro de <span class="ui">Mostrar más opciones</span> (o <kbd>Mayús</kbd> + clic derecho). No hace falta ser administrador; para quitarlas, desmarca la misma opción.</div>
+</section>
+
 <section id="es-deshacer">
   <h2>↶ Deshacer y seguridad</h2>
   <ul>
     <li>Antes de tocar nada se comprueban nombres no válidos en Windows, duplicados, archivos que ya existen y rutas demasiado largas.</li>
     <li>Si algo falla a mitad de un renombrado, se revierte todo: no quedan cambios a medias.</li>
-    <li>El botón <span class="ui">↶ Deshacer</span> revierte la última operación (renombrar, subtítulos o crear carpetas). Puedes pulsarlo varias veces; recuerda las últimas 50, <b>incluso tras cerrar la aplicación</b>.</li>
+    <li>El botón <span class="ui">↶ Deshacer</span> revierte la última operación (renombrar, subtítulos, crear carpetas o copiar lo que falta). Puedes pulsarlo varias veces; recuerda las últimas 50, <b>incluso tras cerrar la aplicación</b>.</li>
     <li>Al deshacer una creación de carpetas solo se borra lo que siga vacío: si ya metiste algo dentro, se conserva.</li>
   </ul>
 </section>
@@ -272,9 +339,13 @@ article{display:none}article.on{display:block}
     <li><a href="#en-renombrar">✏️ Rename</a></li>
     <li><a href="#en-reglas">The rules, one by one</a></li>
     <li><a href="#en-series">Series template</a></li>
+    <li><a href="#en-metadatos">Rename by metadata</a></li>
     <li><a href="#en-presets">Presets</a></li>
     <li><a href="#en-subtitulos">💬 Subtitles</a></li>
     <li><a href="#en-crear">🧱 Create folders</a></li>
+    <li><a href="#en-comparar">⚖️ Compare folders</a></li>
+    <li><a href="#en-duplicados">👯 Duplicates</a></li>
+    <li><a href="#en-integracion">Windows context menu</a></li>
     <li><a href="#en-deshacer">↶ Undo and safety</a></li>
     <li><a href="#en-ajustes">Language and updates</a></li>
     <li><a href="#en-faq">FAQ</a></li>
@@ -284,13 +355,15 @@ article{display:none}article.on{display:block}
 <section id="en-inicio">
   <h1>GestionCarp guide</h1>
   <p class="lead">Explore folders, share their structure, batch-rename files and get subtitles ready for your player.</p>
-  <p>The app has four tabs:</p>
+  <p>The app has six tabs:</p>
   <table>
     <tr><th>Tab</th><th>What it is for</th></tr>
     <tr><td class="ui">📁 Explorer and export</td><td>See a folder's tree and copy or save it (text, Markdown, JSON, HTML, Excel, Word).</td></tr>
     <tr><td class="ui">✏️ Rename</td><td>Rename many files at once with rules: number, series template, clean up, replace…</td></tr>
     <tr><td class="ui">💬 Subtitles</td><td>Give each subtitle the name of its episode so the player loads it automatically.</td></tr>
     <tr><td class="ui">🧱 Create folders</td><td>Create a whole folder structure typed or pasted as text.</td></tr>
+    <tr><td class="ui">⚖️ Compare</td><td>See what is missing or different between two folders and copy what is missing.</td></tr>
+    <tr><td class="ui">👯 Duplicates</td><td>Find identical files and free up space by sending the copies to the Recycle Bin.</td></tr>
   </table>
   <div class="tip">You can <b>drag</b> folders and files from Windows Explorer onto any tab. Press <kbd>F1</kbd> to open this guide at the section for the tab you are on.</div>
   <div class="tip">Nothing changes on disk until you have seen a <b>preview</b> and confirmed it, and everything can be <b>undone</b>.</div>
@@ -357,6 +430,7 @@ article{display:none}article.on{display:block}
     <tr><th>Rule</th><th>What it does</th><th>Example</th></tr>
     <tr><td class="ui">Number</td><td>Adds a number: replacing the name, at the start or at the end. Choose text before/after, start, step and digits. <i>Restart in each folder</i> is handy for seasons.</td><td><code>x.mkv</code> → <code>My Show - Ep01.mkv</code></td></tr>
     <tr><td class="ui">Series template</td><td>Builds the name from the detected season, episode and title. <a href="#en-series">Details</a>.</td><td><code>show.s01e05.mkv</code> → <code>Show - S01E05.mkv</code></td></tr>
+    <tr><td class="ui">Metadata</td><td>Uses data stored inside the file: photo date, camera, artist, title, track… <a href="#en-metadatos">Details</a>.</td><td><code>IMG_4821.jpg</code> → <code>2023-07-15 18.30.05.jpg</code></td></tr>
     <tr><td class="ui">Clean up names</td><td>Removes <code>[groups]</code>, quality tags (<code>1080p</code>, <code>WEB-DL</code>, <code>x264</code>…), the trailing group <code>-XYZ</code>, and turns dots and <code>_</code> into spaces.</td><td><code>[G] My.Show.S01E02.1080p-XYZ</code> → <code>My Show S01E02</code></td></tr>
     <tr><td class="ui">Replace</td><td>Finds some text and replaces it. Options: all occurrences, match case, regular expression (with <code>$1</code>, <code>$2</code>…).</td><td><code>My.Show</code> → <code>My Show</code></td></tr>
     <tr><td class="ui">Insert</td><td>Adds text at the start, at the end or after N characters.</td><td><code>a.mkv</code> → <code>[HD] a.mkv</code></td></tr>
@@ -385,6 +459,26 @@ article{display:none}article.on{display:block}
   <div class="ex"><code>breaking.bad.s01e05.gray.matter.720p.mkv</code><span>→</span><code>breaking bad - S01E05 - gray matter.mkv</code></div>
   <div class="ex"><code>My Show/Season 3/Episode 4.mkv</code><span>→</span><code>My Show - S03E04.mkv</code></div>
   <div class="tip warn">If no episode is found in a name, that row turns red and is left untouched.</div>
+</section>
+
+<section id="en-metadatos">
+  <h2>Rename by metadata</h2>
+  <p>The <span class="ui">Metadata</span> rule reads the information stored inside files and uses it in the name. Ideal to sort photos by date or music by track.</p>
+  <table>
+    <tr><th>Token</th><th>Value</th><th>Files</th></tr>
+    <tr><td><code>{date}</code></td><td>When the photo was taken or the video recorded (otherwise, the modification date)</td><td>JPEG, MP4, MOV</td></tr>
+    <tr><td><code>{modified}</code> <code>{created}</code></td><td>File dates</td><td>All</td></tr>
+    <tr><td><code>{camera}</code></td><td>Camera make and model</td><td>JPEG</td></tr>
+    <tr><td><code>{width}</code> <code>{height}</code> <code>{resolution}</code></td><td>Dimensions (<code>1920x1080</code>)</td><td>JPEG, PNG, MP4</td></tr>
+    <tr><td><code>{artist}</code> <code>{album}</code> <code>{title}</code> <code>{genre}</code></td><td>Song or video tags</td><td>MP3, FLAC, M4A, MP4</td></tr>
+    <tr><td><code>{track}</code> <code>{year}</code></td><td>Track number and year</td><td>MP3, FLAC, M4A</td></tr>
+    <tr><td><code>{duration}</code></td><td>Duration (<code>3m25s</code>)</td><td>FLAC, M4A, MP4</td></tr>
+    <tr><td><code>{name}</code> <code>{n}</code></td><td>Current name and position in the list</td><td>All</td></tr>
+  </table>
+  <p>Formats: dates with <code>{date:yyyy-MM-dd HH.mm.ss}</code> (<code>yyyy</code> year, <code>MM</code> month, <code>dd</code> day, <code>HH.mm.ss</code> time) and numbers with zeros: <code>{track:00}</code>.</p>
+  <div class="ex"><code>IMG_4821.jpg</code><span>→</span><code>2023-07-15 18.30.05.jpg</code></div>
+  <div class="ex"><code>track03.mp3</code><span>→</span><code>03 - My Song.mp3</code></div>
+  <div class="tip warn">If a file lacks a value, it turns red and is not renamed. Check <span class="ui">If a value is missing, leave it empty</span> to rename it anyway.</div>
 </section>
 
 <section id="en-presets">
@@ -429,12 +523,52 @@ article{display:none}article.on{display:block}
   <div class="tip">To copy the structure of a folder you already have: scan it in the Explorer tab and press <span class="ui">Use as template</span>.</div>
 </section>
 
+<section id="en-comparar">
+  <h2>⚖️ Compare folders</h2>
+  <p>Handy to check whether a backup is complete or which episodes are missing on another drive.</p>
+  <ol class="steps">
+    <li>Choose (or drag) <span class="ui">Folder A</span> and <span class="ui">Folder B</span>. <span class="ui">⇅</span> swaps them.</li>
+    <li>Choose when two files count as equal: <b>same name and size</b> (fast), <b>also the same date</b>, or <b>same content</b> (exact, reads the whole files).</li>
+    <li>Press <span class="ui">Compare</span>.</li>
+  </ol>
+  <p><span class="chip wa">≠ different</span> <span class="chip ok">◀ only in A</span> <span class="chip ok">▶ only in B</span> <span class="chip un">= equal</span> — only differences are shown by default; use the <span class="ui">Show</span> boxes to filter.</p>
+  <ul>
+    <li><span class="ui">Copy what B is missing</span> (or A): copies what is only in the other folder. It <b>never overwrites</b> anything and can be undone.</li>
+    <li><span class="ui">Copy report</span>: puts the list of differences on the clipboard.</li>
+  </ul>
+</section>
+
+<section id="en-duplicados">
+  <h2>👯 Find duplicates</h2>
+  <p>Finds files with <b>exactly the same content</b>, even with another name or in another folder.</p>
+  <ol class="steps">
+    <li>Add (or drag) one or more folders.</li>
+    <li>Optional: <span class="ui">Minimum size</span> (to ignore small files), <span class="ui">Only files</span> (e.g. <code>*.jpg; *.mp4</code>) and <span class="ui">Exclude</span>.</li>
+    <li>Press <span class="ui">Find duplicates</span>. You will see groups of copies, sorted by the extra space they use.</li>
+    <li>Mark the copies you do not need: by hand, or choose what to <span class="ui">Keep in each group</span> (oldest, newest or shortest path) and press <span class="ui">Mark the rest</span>.</li>
+    <li>Press <span class="ui">Send marked to Recycle Bin</span>.</li>
+  </ol>
+  <div class="tip">Nothing is permanently deleted: files go to the <b>Recycle Bin</b>, where you can restore them. GestionCarp will not let you mark every copy in a group.</div>
+  <p><span class="ui">📂</span> opens each file's folder so you can check it.</p>
+</section>
+
+<section id="en-integracion">
+  <h2>Windows context menu</h2>
+  <p>In <span class="ui">File → Add GestionCarp to the Explorer context menu</span> you turn on the right-click shortcut:</p>
+  <ul>
+    <li><b>On a folder</b> (or the background of an open folder): a <span class="ui">GestionCarp</span> submenu with Explore and export, Rename the contents, Match subtitles, Compare with…, Find duplicates and Create folders here.</li>
+    <li><b>On files</b>: <span class="ui">Rename with GestionCarp</span>. If you select several, they all go to the same list.</li>
+    <li><b>Compare with…</b>: use it on the first folder and then on the second; they are compared automatically.</li>
+  </ul>
+  <div class="tip">On <b>Windows 11</b> these options are under <span class="ui">Show more options</span> (or <kbd>Shift</kbd> + right-click). No administrator rights needed; to remove them, uncheck the same option.</div>
+</section>
+
 <section id="en-deshacer">
   <h2>↶ Undo and safety</h2>
   <ul>
     <li>Before touching anything, it checks for names Windows does not allow, duplicates, existing files and paths that are too long.</li>
     <li>If something fails halfway through a rename, everything is rolled back: nothing is left half-done.</li>
-    <li><span class="ui">↶ Undo</span> reverts the last operation (rename, subtitles or create folders). You can press it several times; it remembers the last 50, <b>even after closing the app</b>.</li>
+    <li><span class="ui">↶ Undo</span> reverts the last operation (rename, subtitles, create folders or copy what is missing). You can press it several times; it remembers the last 50, <b>even after closing the app</b>.</li>
     <li>Undoing a folder creation only deletes what is still empty: anything you have put inside is kept.</li>
   </ul>
 </section>
@@ -481,9 +615,13 @@ article{display:none}article.on{display:block}
     <li><a href="#pt-renombrar">✏️ Renomear</a></li>
     <li><a href="#pt-reglas">As regras, uma a uma</a></li>
     <li><a href="#pt-series">Modelo de séries</a></li>
+    <li><a href="#pt-metadatos">Renomear por metadados</a></li>
     <li><a href="#pt-presets">Presets</a></li>
     <li><a href="#pt-subtitulos">💬 Legendas</a></li>
     <li><a href="#pt-crear">🧱 Criar pastas</a></li>
+    <li><a href="#pt-comparar">⚖️ Comparar pastas</a></li>
+    <li><a href="#pt-duplicados">👯 Duplicados</a></li>
+    <li><a href="#pt-integracion">Menu de contexto do Windows</a></li>
     <li><a href="#pt-deshacer">↶ Desfazer e segurança</a></li>
     <li><a href="#pt-ajustes">Idioma e atualizações</a></li>
     <li><a href="#pt-faq">Perguntas frequentes</a></li>
@@ -493,13 +631,15 @@ article{display:none}article.on{display:block}
 <section id="pt-inicio">
   <h1>Guia do GestionCarp</h1>
   <p class="lead">Explore pastas, compartilhe sua estrutura, renomeie arquivos em lote e deixe as legendas prontas para o player.</p>
-  <p>O aplicativo tem quatro abas:</p>
+  <p>O aplicativo tem seis abas:</p>
   <table>
     <tr><th>Aba</th><th>Para que serve</th></tr>
     <tr><td class="ui">📁 Explorador e exportar</td><td>Ver a árvore de uma pasta e copiá-la ou salvá-la (texto, Markdown, JSON, HTML, Excel, Word).</td></tr>
     <tr><td class="ui">✏️ Renomear</td><td>Renomear muitos arquivos de uma vez com regras: numerar, modelo de séries, limpar, substituir…</td></tr>
     <tr><td class="ui">💬 Legendas</td><td>Dar a cada legenda o nome do seu episódio para o player carregá-la sozinho.</td></tr>
     <tr><td class="ui">🧱 Criar pastas</td><td>Criar de uma vez uma estrutura de pastas digitada ou colada como texto.</td></tr>
+    <tr><td class="ui">⚖️ Comparar</td><td>Ver o que falta ou o que é diferente entre duas pastas e copiar o que falta.</td></tr>
+    <tr><td class="ui">👯 Duplicados</td><td>Encontrar arquivos idênticos e liberar espaço enviando as cópias para a Lixeira.</td></tr>
   </table>
   <div class="tip">Você pode <b>arrastar</b> pastas e arquivos do Explorador do Windows para qualquer aba. Pressione <kbd>F1</kbd> para abrir este guia na seção da aba em que você está.</div>
   <div class="tip">Nada muda no disco sem que você veja antes uma <b>prévia</b> e confirme, e tudo pode ser <b>desfeito</b>.</div>
@@ -566,6 +706,7 @@ article{display:none}article.on{display:block}
     <tr><th>Regra</th><th>O que faz</th><th>Exemplo</th></tr>
     <tr><td class="ui">Numerar</td><td>Coloca um número: substituindo o nome, no início ou no final. Escolha texto antes/depois, início, incremento e dígitos. <i>Reiniciar em cada pasta</i> serve para temporadas.</td><td><code>x.mkv</code> → <code>Minha Série - Ep01.mkv</code></td></tr>
     <tr><td class="ui">Modelo de séries</td><td>Monta o nome com a temporada, o episódio e o título detectados. <a href="#pt-series">Detalhes</a>.</td><td><code>show.s01e05.mkv</code> → <code>Show - T01E05.mkv</code></td></tr>
+    <tr><td class="ui">Metadados</td><td>Usa dados guardados dentro do arquivo: data da foto, câmera, artista, título, faixa… <a href="#pt-metadatos">Detalhes</a>.</td><td><code>IMG_4821.jpg</code> → <code>2023-07-15 18.30.05.jpg</code></td></tr>
     <tr><td class="ui">Limpar nomes</td><td>Remove <code>[grupos]</code>, etiquetas de qualidade (<code>1080p</code>, <code>WEB-DL</code>, <code>x264</code>…), o grupo final <code>-XYZ</code> e converte pontos e <code>_</code> em espaços.</td><td><code>[G] Minha.Serie.S01E02.1080p-XYZ</code> → <code>Minha Serie S01E02</code></td></tr>
     <tr><td class="ui">Substituir</td><td>Procura um texto e troca por outro. Opções: todas as ocorrências, diferenciar maiúsculas, expressão regular (com <code>$1</code>, <code>$2</code>…).</td><td><code>Minha.Serie</code> → <code>Minha Serie</code></td></tr>
     <tr><td class="ui">Inserir</td><td>Adiciona texto no início, no final ou após N caracteres.</td><td><code>a.mkv</code> → <code>[HD] a.mkv</code></td></tr>
@@ -594,6 +735,26 @@ article{display:none}article.on{display:block}
   <div class="ex"><code>breaking.bad.s01e05.gray.matter.720p.mkv</code><span>→</span><code>breaking bad - T01E05 - gray matter.mkv</code></div>
   <div class="ex"><code>Minha Série/Temporada 3/Episódio 4.mkv</code><span>→</span><code>Minha Série - T03E04.mkv</code></div>
   <div class="tip warn">Se o episódio não for encontrado num nome, essa linha fica vermelha e não é alterada.</div>
+</section>
+
+<section id="pt-metadatos">
+  <h2>Renomear por metadados</h2>
+  <p>A regra <span class="ui">Metadados</span> lê as informações guardadas dentro dos arquivos e as usa no nome. Ideal para organizar fotos por data ou músicas por faixa.</p>
+  <table>
+    <tr><th>Marcador</th><th>Dado</th><th>Arquivos</th></tr>
+    <tr><td><code>{data}</code></td><td>Quando a foto foi tirada ou o vídeo gravado (senão, a data de modificação)</td><td>JPEG, MP4, MOV</td></tr>
+    <tr><td><code>{modificado}</code> <code>{criado}</code></td><td>Datas do arquivo</td><td>Todos</td></tr>
+    <tr><td><code>{camera}</code></td><td>Marca e modelo da câmera</td><td>JPEG</td></tr>
+    <tr><td><code>{largura}</code> <code>{altura}</code> <code>{resolucao}</code></td><td>Dimensões (<code>1920x1080</code>)</td><td>JPEG, PNG, MP4</td></tr>
+    <tr><td><code>{artista}</code> <code>{album}</code> <code>{titulo}</code> <code>{genero}</code></td><td>Etiquetas da música ou do vídeo</td><td>MP3, FLAC, M4A, MP4</td></tr>
+    <tr><td><code>{faixa}</code> <code>{ano}</code></td><td>Número da faixa e ano</td><td>MP3, FLAC, M4A</td></tr>
+    <tr><td><code>{duracao}</code></td><td>Duração (<code>3m25s</code>)</td><td>FLAC, M4A, MP4</td></tr>
+    <tr><td><code>{nome}</code> <code>{n}</code></td><td>Nome atual e posição na lista</td><td>Todos</td></tr>
+  </table>
+  <p>Formatos: datas com <code>{data:yyyy-MM-dd HH.mm.ss}</code> (<code>yyyy</code> ano, <code>MM</code> mês, <code>dd</code> dia, <code>HH.mm.ss</code> hora) e números com zeros: <code>{faixa:00}</code>.</p>
+  <div class="ex"><code>IMG_4821.jpg</code><span>→</span><code>2023-07-15 18.30.05.jpg</code></div>
+  <div class="ex"><code>track03.mp3</code><span>→</span><code>03 - Minha Música.mp3</code></div>
+  <div class="tip warn">Se faltar um dado num arquivo, ele fica vermelho e não é renomeado. Marque <span class="ui">Se faltar um dado, deixá-lo vazio</span> para renomeá-lo mesmo assim.</div>
 </section>
 
 <section id="pt-presets">
@@ -638,12 +799,52 @@ article{display:none}article.on{display:block}
   <div class="tip">Para copiar a estrutura de uma pasta que você já tem: analise-a na aba Explorador e clique em <span class="ui">Usar como modelo</span>.</div>
 </section>
 
+<section id="pt-comparar">
+  <h2>⚖️ Comparar pastas</h2>
+  <p>Útil para saber se um backup está completo ou quais episódios faltam em outro disco.</p>
+  <ol class="steps">
+    <li>Escolha (ou arraste) a <span class="ui">Pasta A</span> e a <span class="ui">Pasta B</span>. Com <span class="ui">⇅</span> você as troca.</li>
+    <li>Escolha quando dois arquivos são iguais: <b>mesmo nome e tamanho</b> (rápido), <b>também a mesma data</b>, ou <b>mesmo conteúdo</b> (exato, lê os arquivos inteiros).</li>
+    <li>Clique em <span class="ui">Comparar</span>.</li>
+  </ol>
+  <p><span class="chip wa">≠ diferentes</span> <span class="chip ok">◀ só em A</span> <span class="chip ok">▶ só em B</span> <span class="chip un">= iguais</span> — por padrão só as diferenças são mostradas; use as caixas de <span class="ui">Mostrar</span> para filtrar.</p>
+  <ul>
+    <li><span class="ui">Copiar para B o que falta</span> (ou para A): copia o que só está na outra pasta. <b>Nunca sobrescreve</b> nada e pode ser desfeito.</li>
+    <li><span class="ui">Copiar relatório</span>: coloca a lista de diferenças na área de transferência.</li>
+  </ul>
+</section>
+
+<section id="pt-duplicados">
+  <h2>👯 Procurar duplicados</h2>
+  <p>Encontra arquivos com <b>exatamente o mesmo conteúdo</b>, mesmo com outro nome ou em outra pasta.</p>
+  <ol class="steps">
+    <li>Adicione (ou arraste) uma ou mais pastas.</li>
+    <li>Opcional: <span class="ui">Tamanho mínimo</span> (para ignorar arquivos pequenos), <span class="ui">Somente arquivos</span> (por exemplo <code>*.jpg; *.mp4</code>) e <span class="ui">Excluir</span>.</li>
+    <li>Clique em <span class="ui">Procurar duplicados</span>. Você verá os grupos de cópias, ordenados pelo espaço extra que ocupam.</li>
+    <li>Marque as cópias que sobram: manualmente, ou escolha o que <span class="ui">Manter em cada grupo</span> (o mais antigo, o mais recente ou o de caminho mais curto) e clique em <span class="ui">Marcar o resto</span>.</li>
+    <li>Clique em <span class="ui">Enviar marcados para a Lixeira</span>.</li>
+  </ol>
+  <div class="tip">Nada é apagado definitivamente: os arquivos vão para a <b>Lixeira</b>, de onde podem ser restaurados. O GestionCarp não deixa marcar todas as cópias de um grupo.</div>
+  <p>Com <span class="ui">📂</span> você abre a pasta de cada arquivo para conferir.</p>
+</section>
+
+<section id="pt-integracion">
+  <h2>Menu de contexto do Windows</h2>
+  <p>Em <span class="ui">Arquivo → Adicionar o GestionCarp ao menu de contexto do Explorador</span> você ativa o atalho no clique direito:</p>
+  <ul>
+    <li><b>Numa pasta</b> (ou no fundo de uma pasta aberta): submenu <span class="ui">GestionCarp</span> com Explorar e exportar, Renomear o conteúdo, Parear legendas, Comparar com…, Procurar duplicados e Criar pastas aqui.</li>
+    <li><b>Em arquivos</b>: <span class="ui">Renomear com o GestionCarp</span>. Se selecionar vários, todos vão para a mesma lista.</li>
+    <li><b>Comparar com…</b>: use na primeira pasta e depois na segunda; elas são comparadas sozinhas.</li>
+  </ul>
+  <div class="tip">No <b>Windows 11</b> essas opções ficam em <span class="ui">Mostrar mais opções</span> (ou <kbd>Shift</kbd> + clique direito). Não precisa ser administrador; para removê-las, desmarque a mesma opção.</div>
+</section>
+
 <section id="pt-deshacer">
   <h2>↶ Desfazer e segurança</h2>
   <ul>
     <li>Antes de alterar qualquer coisa, verifica nomes que o Windows não aceita, duplicados, arquivos que já existem e caminhos longos demais.</li>
     <li>Se algo falhar no meio de uma renomeação, tudo é revertido: nada fica pela metade.</li>
-    <li><span class="ui">↶ Desfazer</span> reverte a última operação (renomear, legendas ou criar pastas). Você pode clicar várias vezes; ele lembra as últimas 50, <b>mesmo depois de fechar o aplicativo</b>.</li>
+    <li><span class="ui">↶ Desfazer</span> reverte a última operação (renomear, legendas, criar pastas ou copiar o que falta). Você pode clicar várias vezes; ele lembra as últimas 50, <b>mesmo depois de fechar o aplicativo</b>.</li>
     <li>Ao desfazer uma criação de pastas, só é apagado o que continua vazio: o que você já colocou dentro é mantido.</li>
   </ul>
 </section>

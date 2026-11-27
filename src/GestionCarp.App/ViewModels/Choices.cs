@@ -75,6 +75,20 @@ public static class Choices
         new Choice(TreeExportFormat.Word, "fmt_word"),
     };
 
+    public static IReadOnlyList<Choice> CompareModes { get; } = new[]
+    {
+        new Choice(GestionCarp.Core.Compare.CompareMode.NameAndSize, "cmpmode_size"),
+        new Choice(GestionCarp.Core.Compare.CompareMode.NameSizeAndDate, "cmpmode_date"),
+        new Choice(GestionCarp.Core.Compare.CompareMode.Content, "cmpmode_content"),
+    };
+
+    public static IReadOnlyList<Choice> KeepPolicies { get; } = new[]
+    {
+        new Choice(KeepPolicy.Oldest, "keep_oldest"),
+        new Choice(KeepPolicy.Newest, "keep_newest"),
+        new Choice(KeepPolicy.ShortestPath, "keep_shortest"),
+    };
+
     public static IReadOnlyList<Choice> SubtitleModes { get; } = new[]
     {
         new Choice(SubtitleMatchMode.ByEpisode, "submode_episode"),
