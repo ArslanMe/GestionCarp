@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 namespace GestionCarp.Core.Rename;
 
 /// <summary>Un cambio de nombre (o de ubicación) de un archivo o carpeta.</summary>
@@ -55,7 +56,7 @@ public static class RenameExecutor
                 foreach (var op in group)
                 {
                     if (!PathExists(op.SourcePath))
-                        throw new IOException($"No se encuentra: {op.SourcePath}");
+                        throw new IOException(L.F("exec_not_found", op.SourcePath));
                     string temp = Path.Combine(Path.GetDirectoryName(op.SourcePath) ?? "",
                         "~gc_" + Guid.NewGuid().ToString("N")[..12] + ".tmp");
                     Move(op.SourcePath, temp, op.IsDirectory);
@@ -66,7 +67,7 @@ public static class RenameExecutor
                 foreach (var (op, temp) in temps)
                 {
                     if (PathExists(op.TargetPath))
-                        throw new IOException($"Ya existe: {op.TargetPath}");
+                        throw new IOException(L.F("exec_exists", op.TargetPath));
                     Move(temp, op.TargetPath, op.IsDirectory);
                     moves.Add((temp, op.TargetPath, op.IsDirectory));
                     executed.Add(op);
@@ -83,10 +84,10 @@ public static class RenameExecutor
                 catch (Exception rollbackEx) { rollbackErrors.Add($"{to}: {rollbackEx.Message}"); }
             }
 
-            string message = "No se pudo completar el renombrado: " + ex.Message;
+            string message = L.F("exec_failed", ex.Message);
             message += rollbackErrors.Count == 0
-                ? "\nNo se ha cambiado nada (se revirtieron los cambios)."
-                : "\nAlgunos cambios no se pudieron revertir:\n" + string.Join("\n", rollbackErrors);
+                ? "\n" + L.T("exec_rolled_back")
+                : "\n" + L.T("exec_rollback_failed") + "\n" + string.Join("\n", rollbackErrors);
             return new RenameResult { Success = false, Error = message };
         }
 
@@ -99,7 +100,7 @@ public static class RenameExecutor
 
     /// <summary>Deshace un lote: aplica las operaciones inversas, de las carpetas exteriores a las interiores.</summary>
     public static RenameResult Undo(RenameBatch batch)
-        => Execute(batch.Operations.Select(o => o.Reverse()), "Deshacer: " + batch.Description, deepestFirst: false);
+        => Execute(batch.Operations.Select(o => o.Reverse()), L.F("exec_undo_prefix", batch.Description), deepestFirst: false);
 
     private static int Depth(string path) => path.Count(c => c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar);
 

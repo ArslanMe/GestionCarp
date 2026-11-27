@@ -44,6 +44,12 @@ Para cuando los subtítulos tienen nombres distintos a los vídeos (por ejemplo,
 - Conserva o añade la etiqueta de idioma, y saca los subtítulos de carpetas `Subs` para dejarlos junto al vídeo.
 - Puedes desmarcar los que no quieras tocar; también se puede deshacer.
 
+### General
+- Interfaz en **español, inglés y portugués** (menú *Idioma*); el cambio es inmediato y se recuerda.
+- **Buscar actualizaciones** (menú *Ayuda*): compara tu versión con la última publicada en GitHub y, si hay una
+  nueva, la descarga, sustituye el programa y lo reinicia. Puede comprobarse automáticamente al iniciar.
+- Ventana **Acerca de** con la versión instalada y el autor.
+
 ## Descargar
 
 Descarga `GestionCarp.exe` de la última versión en
@@ -75,3 +81,7 @@ dotnet run --project src/GestionCarp.App
 - Presets de reglas guardados, plantilla de series `{nombre} T{temp}E{ep}`, limpieza automática de nombres.
 - Exportar a HTML, Excel y Word; crear carpetas a partir de un árbol pegado.
 - Menú contextual del Explorador de Windows, comparar carpetas, duplicados, renombrar por metadatos.
+
+## Autor
+
+Creado por **Raudel Camacho** · © 2026 Raudel Camacho

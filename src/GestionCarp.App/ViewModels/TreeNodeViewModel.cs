@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GestionCarp.Core.Common;
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Tree;
 
 namespace GestionCarp.App.ViewModels;
@@ -48,11 +49,19 @@ public sealed class TreeNodeViewModel : ObservableObject
         {
             if (!Node.IsDirectory) return SizeFormatter.Format(Node.Size);
             if (Node.Error is not null) return Node.Error;
-            string text = $"{SizeFormatter.Format(Node.Size)} · {Node.FileCount:N0} archivos";
-            if (Node.FolderCount > 0) text += $" · {Node.FolderCount:N0} carpetas";
-            if (Node.IsTruncated) text += " · (no analizado)";
+            string text = L.F("node_files", SizeFormatter.Format(Node.Size), Node.FileCount);
+            if (Node.FolderCount > 0) text += L.F("node_folders", Node.FolderCount);
+            if (Node.IsTruncated) text += L.T("node_truncated");
             return text;
         }
+    }
+
+    /// <summary>Actualiza los textos de este nodo y de los hijos ya creados (tras cambiar de idioma).</summary>
+    public void RefreshTexts()
+    {
+        OnPropertyChanged(nameof(Details));
+        if (_children is null) return;
+        foreach (var child in _children) child.RefreshTexts();
     }
 
     public IReadOnlyList<TreeNodeViewModel> Children

@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 namespace GestionCarp.Core.Rename.Rules;
 
 public enum InsertPosition
@@ -15,7 +16,7 @@ public sealed class InsertRule : RenameRule
     private InsertPosition _position = InsertPosition.Start;
     private int _index;
 
-    public override string DisplayName => "Insertar";
+    public override string DisplayName => L.T("rule_insert");
 
     public string Text { get => _text; set => SetProperty(ref _text, value ?? ""); }
     public InsertPosition Position { get => _position; set => SetProperty(ref _position, value); }
@@ -25,9 +26,9 @@ public sealed class InsertRule : RenameRule
 
     public override string Summary => Position switch
     {
-        InsertPosition.End => $"\"{Text}\" al final",
-        InsertPosition.AtIndex => $"\"{Text}\" tras {Index} caracteres",
-        _ => $"\"{Text}\" al inicio",
+        InsertPosition.End => L.F("ins_sum_end", Text),
+        InsertPosition.AtIndex => L.F("ins_sum_index", Text, Index),
+        _ => L.F("ins_sum_start", Text),
     };
 
     protected override string ApplyCore(string text, RenameContext context) => Position switch

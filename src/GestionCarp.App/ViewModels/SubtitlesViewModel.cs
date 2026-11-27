@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Input;
 using GestionCarp.App.Services;
 using GestionCarp.Core.Common;
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Rename;
 using GestionCarp.Core.Subtitles;
 
@@ -26,7 +27,7 @@ public sealed class SubtitlesViewModel : ObservableObject
     private bool _keepLanguageTags = true;
     private string _defaultLanguage = "";
     private bool _moveToVideoFolder = true;
-    private string _summary = "Elige la carpeta de la serie: se buscarán los vídeos y sus subtítulos.";
+    private string _summary = L.T("sub_initial");
 
     public SubtitlesViewModel(RenameService service)
     {
@@ -65,7 +66,7 @@ public sealed class SubtitlesViewModel : ObservableObject
 
     private void Browse()
     {
-        var folder = Dialogs.PickFolder("Elige la carpeta con los vídeos y subtítulos", FolderPath);
+        var folder = Dialogs.PickFolder(L.T("sub_pick"), FolderPath);
         if (folder is null) return;
         FolderPath = folder;
         Analyze();
@@ -76,7 +77,7 @@ public sealed class SubtitlesViewModel : ObservableObject
         string folder = FolderPath.Trim().Trim('"');
         if (!Directory.Exists(folder))
         {
-            Summary = "La carpeta no existe: " + folder;
+            Summary = L.F("folder_not_exists", folder);
             return;
         }
 
@@ -92,7 +93,7 @@ public sealed class SubtitlesViewModel : ObservableObject
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Summary = "No se pudo leer la carpeta: " + ex.Message;
+            Summary = L.F("sub_read_error", ex.Message);
             return;
         }
 
@@ -131,10 +132,10 @@ public sealed class SubtitlesViewModel : ObservableObject
         int skipped = _plan.Count(r => r.Status == RenameStatus.Skipped);
         int errors = _plan.Count(r => r.Status == RenameStatus.Error);
 
-        var parts = new List<string> { $"{_videos.Count:N0} vídeos", $"{_subtitles.Count:N0} subtítulos", $"{ready:N0} a renombrar" };
-        if (unchanged > 0) parts.Add($"{unchanged:N0} ya correctos");
-        if (skipped > 0) parts.Add($"{skipped:N0} sin emparejar o desmarcados");
-        if (errors > 0) parts.Add($"{errors:N0} con conflictos");
+        var parts = new List<string> { L.F("sub_sum_videos", _videos.Count), L.F("sub_sum_subs", _subtitles.Count), L.F("sub_sum_ready", ready) };
+        if (unchanged > 0) parts.Add(L.F("sub_sum_ok", unchanged));
+        if (skipped > 0) parts.Add(L.F("sub_sum_skipped", skipped));
+        if (errors > 0) parts.Add(L.F("sub_sum_errors", errors));
         Summary = string.Join(" · ", parts);
 
         OnPropertyChanged(nameof(HasRows));
@@ -161,17 +162,23 @@ public sealed class SubtitlesViewModel : ObservableObject
         var operations = RenamePlanner.ToOperations(_plan);
         if (operations.Count == 0)
         {
-            Dialogs.Info("No hay ningún subtítulo que renombrar.");
+            Dialogs.Info(L.T("sub_nothing"));
             return;
         }
 
-        if (!Dialogs.Confirm($"Se van a renombrar {operations.Count:N0} subtítulos con el nombre de su vídeo.\n\n" +
-                             "Podrás deshacerlo con «Deshacer». ¿Continuar?"))
+        if (!Dialogs.Confirm(L.F("sub_confirm", operations.Count) + "\n\n" + L.T("confirm_undo_hint")))
             return;
 
-        var result = _service.Execute(operations, $"Emparejar {operations.Count} subtítulos");
+        var result = _service.Execute(operations, L.F("sub_batch", operations.Count));
         if (!result.Success)
-            Dialogs.Error(result.Error ?? "Error desconocido");
+            Dialogs.Error(result.Error ?? L.T("err_unknown"));
+    }
+
+    public void OnLanguageChanged()
+    {
+        OnPropertyChanged(nameof(UndoDescription));
+        if (_loaded) Recompute();
+        else Summary = L.T("sub_initial");
     }
 
     private void Undo()
@@ -179,7 +186,7 @@ public sealed class SubtitlesViewModel : ObservableObject
         if (!Dialogs.Confirm(_service.UndoDescription + "?")) return;
         var result = _service.Undo();
         if (!result.Success)
-            Dialogs.Error(result.Error ?? "Error desconocido");
+            Dialogs.Error(result.Error ?? L.T("err_unknown"));
     }
 }
 
@@ -246,7 +253,7 @@ public sealed class SubtitleRowViewModel : ObservableObject
         VideoName = row.RelatedName ?? "";
         NewName = row.Status is RenameStatus.Skipped ? "" : Relative(row.TargetPath);
         Status = row.Status;
-        Message = row.Status == RenameStatus.Unchanged ? "Ya tiene el nombre correcto" : row.Message;
+        Message = row.Status == RenameStatus.Unchanged ? L.T("sub_already_ok") : row.Message;
     }
 
     private string Relative(string path)

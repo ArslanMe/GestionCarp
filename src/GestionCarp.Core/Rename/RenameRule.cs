@@ -52,6 +52,13 @@ public abstract class RenameRule : ObservableObject
         return newExt.Length == 0 ? name : name + "." + newExt;
     }
 
+    /// <summary>Vuelve a notificar los textos visibles (tras cambiar de idioma).</summary>
+    public void RefreshTexts()
+    {
+        base.OnPropertyChanged(nameof(DisplayName));
+        base.OnPropertyChanged(nameof(Summary));
+    }
+
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         base.OnPropertyChanged(propertyName);

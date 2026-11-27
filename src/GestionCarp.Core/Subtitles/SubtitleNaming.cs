@@ -22,7 +22,7 @@ public static class SubtitleNaming
         // Nombres de idioma
         "spanish", "español", "espanol", "castellano", "latino", "latin", "english", "ingles", "inglés",
         "french", "frances", "francés", "german", "aleman", "alemán", "italian", "italiano",
-        "portuguese", "portugues", "portugués", "japanese", "japones", "japonés", "catalan", "català", "catalán",
+        "portuguese", "portugues", "portugués", "português", "brazilian", "brasileiro", "japanese", "japones", "japonés", "catalan", "català", "catalán",
         // Indicadores
         "forced", "forzado", "forzados", "sdh", "cc", "default", "full", "completo", "completos",
     };

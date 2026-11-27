@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -185,7 +186,7 @@ public static class TreeExporter
         var parts = new List<string>();
         if (options.ShowSizes) parts.Add(SizeFormatter.Format(node.Size));
         if (node.IsDirectory && options.ShowCounts)
-            parts.Add($"{node.FolderCount} carpetas, {node.FileCount} archivos");
+            parts.Add(L.F("tree_counts", node.FolderCount, node.FileCount));
         if (options.ShowDates && node.LastModified != DateTime.MinValue)
             parts.Add(node.LastModified.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture));
         if (node.Error is not null) parts.Add(node.Error.ToLowerInvariant());

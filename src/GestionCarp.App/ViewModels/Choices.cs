@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using GestionCarp.Core.Common;
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Rename;
 using GestionCarp.Core.Rename.Rules;
 using GestionCarp.Core.Subtitles;
@@ -6,58 +8,73 @@ using GestionCarp.Core.Tree;
 
 namespace GestionCarp.App.ViewModels;
 
-public sealed record Choice(object Value, string Label);
+/// <summary>Opción de un desplegable; su texto cambia con el idioma.</summary>
+public sealed class Choice : ObservableObject
+{
+    private readonly string _key;
 
-/// <summary>Textos en español para los desplegables de opciones.</summary>
+    public Choice(object value, string key)
+    {
+        Value = value;
+        _key = key;
+        Loc.Current.LanguageChanged += (_, _) => OnPropertyChanged(nameof(Label));
+    }
+
+    public object Value { get; }
+    public string Label => L.T(_key);
+    public override string ToString() => Label;
+}
+
+/// <summary>Listas de opciones de los desplegables.</summary>
 public static class Choices
 {
     public static IReadOnlyList<Choice> RuleScopes { get; } = new[]
     {
-        new Choice(RuleScope.Name, "Solo el nombre"),
-        new Choice(RuleScope.Extension, "Solo la extensión"),
-        new Choice(RuleScope.NameAndExtension, "Nombre y extensión"),
+        new Choice(RuleScope.Name, "scope_name"),
+        new Choice(RuleScope.Extension, "scope_ext"),
+        new Choice(RuleScope.NameAndExtension, "scope_both"),
     };
 
     public static IReadOnlyList<Choice> NumberPlacements { get; } = new[]
     {
-        new Choice(NumberPlacement.ReplaceName, "Sustituir el nombre completo"),
-        new Choice(NumberPlacement.Prefix, "Añadir al principio"),
-        new Choice(NumberPlacement.Suffix, "Añadir al final"),
+        new Choice(NumberPlacement.ReplaceName, "place_replace"),
+        new Choice(NumberPlacement.Prefix, "place_prefix"),
+        new Choice(NumberPlacement.Suffix, "place_suffix"),
     };
 
     public static IReadOnlyList<Choice> InsertPositions { get; } = new[]
     {
-        new Choice(InsertPosition.Start, "Al principio"),
-        new Choice(InsertPosition.End, "Al final"),
-        new Choice(InsertPosition.AtIndex, "En una posición"),
+        new Choice(InsertPosition.Start, "inspos_start"),
+        new Choice(InsertPosition.End, "inspos_end"),
+        new Choice(InsertPosition.AtIndex, "inspos_index"),
     };
 
     public static IReadOnlyList<Choice> RemoveModes { get; } = new[]
     {
-        new Choice(RemoveMode.FirstChars, "Los primeros caracteres"),
-        new Choice(RemoveMode.LastChars, "Los últimos caracteres"),
-        new Choice(RemoveMode.Range, "Un tramo desde una posición"),
-        new Choice(RemoveMode.BetweenDelimiters, "Todo lo que esté entre delimitadores"),
+        new Choice(RemoveMode.FirstChars, "remmode_first"),
+        new Choice(RemoveMode.LastChars, "remmode_last"),
+        new Choice(RemoveMode.Range, "remmode_range"),
+        new Choice(RemoveMode.BetweenDelimiters, "remmode_between"),
     };
 
     public static IReadOnlyList<Choice> CaseModes { get; } = new[]
     {
-        new Choice(CaseMode.Title, "Tipo Título"),
-        new Choice(CaseMode.Sentence, "Tipo oración"),
-        new Choice(CaseMode.Lower, "minúsculas"),
-        new Choice(CaseMode.Upper, "MAYÚSCULAS"),
+        new Choice(CaseMode.Title, "casemode_title"),
+        new Choice(CaseMode.Sentence, "casemode_sentence"),
+        new Choice(CaseMode.Lower, "casemode_lower"),
+        new Choice(CaseMode.Upper, "casemode_upper"),
     };
 
     public static IReadOnlyList<Choice> ExportFormats { get; } = new[]
     {
-        new Choice(TreeExportFormat.Text, "Texto (árbol)"),
-        new Choice(TreeExportFormat.Markdown, "Markdown"),
-        new Choice(TreeExportFormat.Json, "JSON"),
+        new Choice(TreeExportFormat.Text, "fmt_text"),
+        new Choice(TreeExportFormat.Markdown, "fmt_md"),
+        new Choice(TreeExportFormat.Json, "fmt_json"),
     };
 
     public static IReadOnlyList<Choice> SubtitleModes { get; } = new[]
     {
-        new Choice(SubtitleMatchMode.ByEpisode, "Por número de episodio (S01E05, 1x05, Cap 5…)"),
-        new Choice(SubtitleMatchMode.ByOrder, "Por orden alfabético en cada carpeta"),
+        new Choice(SubtitleMatchMode.ByEpisode, "submode_episode"),
+        new Choice(SubtitleMatchMode.ByOrder, "submode_order"),
     };
 }

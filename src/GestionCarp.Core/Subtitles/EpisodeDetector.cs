@@ -1,3 +1,4 @@
+using GestionCarp.Core.Localization;
 using System.Text.RegularExpressions;
 
 namespace GestionCarp.Core.Subtitles;
@@ -6,7 +7,7 @@ namespace GestionCarp.Core.Subtitles;
 public readonly record struct EpisodeInfo(int? Season, int Episode)
 {
     public override string ToString()
-        => Season is null ? $"E{Episode:00}" : $"T{Season:00}E{Episode:00}";
+        => Season is null ? L.F("ep_format", Episode) : L.F("ep_format_season", Season, Episode);
 
     public bool Matches(EpisodeInfo other)
         => Episode == other.Episode && (Season is null || other.Season is null || Season == other.Season);
@@ -19,9 +20,9 @@ public static class EpisodeDetector
 
     private static readonly Regex SeasonEpisode = new(@"(?<![\p{L}\d])s(?<s>\d{1,2})[\s._-]*e(?<e>\d{1,4})(?!\d)", Options);
     private static readonly Regex CrossFormat = new(@"(?<![\p{L}\d])(?<s>\d{1,2})x(?<e>\d{1,3})(?![\p{L}\d])", Options);
-    private static readonly Regex SeasonWord = new(@"(?<!\p{L})(?:temporada|season|temp)\.?[\s._-]*(?<s>\d{1,2})(?!\d)", Options);
+    private static readonly Regex SeasonWord = new(@"(?<!\p{L})(?:temporada|season|saison|temp)\.?[\s._-]*(?<s>\d{1,2})(?!\d)", Options);
     private static readonly Regex EpisodeWord = new(
-        @"(?<!\p{L})(?:cap[ií]tulo|cap|episodio|episode|epis|ep)\.?[\s._#-]*(?<e>\d{1,4})(?!\d)|(?<![\p{L}\d])e(?<e>\d{1,4})(?!\d)",
+        @"(?<!\p{L})(?:cap[ií]tulo|cap|epis[oó]dio|episode|epis|ep)\.?[\s._#-]*(?<e>\d{1,4})(?!\d)|(?<![\p{L}\d])e(?<e>\d{1,4})(?!\d)",
         Options);
     private static readonly Regex Brackets = new(@"\[[^\]]*\]|\([^\)]*\)|\{[^\}]*\}", Options);
     private static readonly Regex LooseNumber = new(@"(?<![\p{L}\d])(?<n>\d{1,3})(?![\p{L}\d])", Options);

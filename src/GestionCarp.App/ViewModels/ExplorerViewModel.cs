@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using GestionCarp.App.Services;
 using GestionCarp.Core.Common;
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Tree;
 
 namespace GestionCarp.App.ViewModels;
@@ -29,7 +30,7 @@ public sealed class ExplorerViewModel : ObservableObject
     private string _excludePatterns = ".git; node_modules; $RECYCLE.BIN; System Volume Information";
     private string _filePatterns = "";
     private bool _isScanning;
-    private string _status = "Elige una carpeta y pulsa «Analizar».";
+    private string _status = L.T("exp_status_initial");
     private TreeExportFormat _exportFormat = TreeExportFormat.Text;
     private bool _exportIncludeFiles = true;
     private bool _showSizes;
@@ -40,6 +41,7 @@ public sealed class ExplorerViewModel : ObservableObject
     private TreeNode? _root;
     private TreeNodeViewModel? _selectedNode;
     private CancellationTokenSource? _cts;
+    private double _scanSeconds;
 
     public ExplorerViewModel(Action<IEnumerable<string>> sendToRenamer, Action<string> sendToSubtitles)
     {
@@ -94,8 +96,8 @@ public sealed class ExplorerViewModel : ObservableObject
 
     public string ExportTitle => ExportRoot is { } root
         ? (ReferenceEquals(root, _root)
-            ? "Se exporta la carpeta analizada. Selecciona una subcarpeta en el árbol para exportar solo esa."
-            : $"Se exporta la carpeta seleccionada: {root.Name}")
+            ? L.T("exp_export_root")
+            : L.F("exp_export_selected", root.Name))
         : "";
 
     /// <summary>Exporta la carpeta seleccionada en el árbol, o la raíz si no hay selección.</summary>
@@ -103,7 +105,7 @@ public sealed class ExplorerViewModel : ObservableObject
 
     private void Browse()
     {
-        var folder = Dialogs.PickFolder("Elige la carpeta a analizar", RootPath);
+        var folder = Dialogs.PickFolder(L.T("exp_pick_folder"), RootPath);
         if (folder is null) return;
         RootPath = folder;
         _ = ScanAsync();
@@ -114,7 +116,7 @@ public sealed class ExplorerViewModel : ObservableObject
         string path = RootPath.Trim().Trim('"');
         if (!Directory.Exists(path))
         {
-            Status = "La carpeta no existe: " + path;
+            Status = L.F("folder_not_exists", path);
             return;
         }
 
@@ -130,8 +132,8 @@ public sealed class ExplorerViewModel : ObservableObject
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
         IsScanning = true;
-        Status = "Analizando…";
-        var progress = new Progress<int>(n => { if (IsScanning) Status = $"Analizando… {n:N0} elementos"; });
+        Status = L.T("exp_scanning");
+        var progress = new Progress<int>(n => { if (IsScanning) Status = L.F("exp_scanning_n", n); });
         var watch = Stopwatch.StartNew();
 
         try
@@ -143,16 +145,16 @@ public sealed class ExplorerViewModel : ObservableObject
             RootNodes.Add(new TreeNodeViewModel(root, OnNodeSelected) { IsExpanded = true });
             OnPropertyChanged(nameof(HasTree));
             UpdatePreview();
-            Status = $"{root.FolderCount:N0} carpetas · {root.FileCount:N0} archivos · {SizeFormatter.Format(root.Size)} " +
-                     $"· analizado en {watch.Elapsed.TotalSeconds:0.0} s";
+            _scanSeconds = watch.Elapsed.TotalSeconds;
+            Status = DoneStatus();
         }
         catch (OperationCanceledException)
         {
-            Status = "Análisis cancelado.";
+            Status = L.T("exp_cancelled");
         }
         catch (Exception ex)
         {
-            Status = "Error: " + ex.Message;
+            Status = L.F("exp_error", ex.Message);
         }
         finally
         {
@@ -161,6 +163,17 @@ public sealed class ExplorerViewModel : ObservableObject
             _cts = null;
             CommandManager.InvalidateRequerySuggested();
         }
+    }
+
+    private string DoneStatus() => _root is null
+        ? L.T("exp_status_initial")
+        : L.F("exp_done", _root.FolderCount, _root.FileCount, SizeFormatter.Format(_root.Size), _scanSeconds);
+
+    public void OnLanguageChanged()
+    {
+        if (!IsScanning) Status = DoneStatus();
+        foreach (var node in RootNodes) node.RefreshTexts();
+        UpdatePreview();
     }
 
     private void OnNodeSelected(TreeNodeViewModel node)
@@ -187,7 +200,7 @@ public sealed class ExplorerViewModel : ObservableObject
         string text = BuildExport();
         ExportPreview = text.Length <= PreviewLimit
             ? text
-            : text[..PreviewLimit] + "\n\n… (vista previa recortada; «Copiar» y «Guardar» incluyen el árbol completo)";
+            : text[..PreviewLimit] + "\n\n" + L.T("exp_preview_cut");
     }
 
     private void Copy()
@@ -196,11 +209,11 @@ public sealed class ExplorerViewModel : ObservableObject
         try
         {
             Clipboard.SetText(text);
-            Status = $"Copiado al portapapeles ({text.Split('\n').Length:N0} líneas).";
+            Status = L.F("exp_copied", text.Split('\n').Length);
         }
         catch (Exception ex)
         {
-            Dialogs.Error("No se pudo copiar al portapapeles: " + ex.Message);
+            Dialogs.Error(L.F("exp_copy_failed", ex.Message));
         }
     }
 
@@ -213,24 +226,24 @@ public sealed class ExplorerViewModel : ObservableObject
         {
             TreeExportFormat.Markdown => "Markdown (*.md)|*.md",
             TreeExportFormat.Json => "JSON (*.json)|*.json",
-            _ => "Texto (*.txt)|*.txt",
+            _ => L.T("exp_filter_text") + " (*.txt)|*.txt",
         };
-        string name = "Estructura - " + FileNameSafe(root.Name) + ext;
-        var path = Dialogs.SaveFile("Guardar estructura", name, filter + "|Todos los archivos|*.*");
+        string name = L.F("exp_save_name", FileNameSafe(root.Name)) + ext;
+        var path = Dialogs.SaveFile(L.T("exp_save_title"), name, filter + "|" + L.T("dlg_filter_all") + "|*.*");
         if (path is null) return;
         try
         {
             File.WriteAllText(path, BuildExport(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
-            Status = "Guardado en " + path;
+            Status = L.F("exp_saved", path);
         }
         catch (Exception ex)
         {
-            Dialogs.Error("No se pudo guardar: " + ex.Message);
+            Dialogs.Error(L.F("exp_save_failed", ex.Message));
         }
     }
 
     private static string FileNameSafe(string name)
-        => string.Concat(name.Split(Path.GetInvalidFileNameChars())).Trim() is { Length: > 0 } s ? s : "raíz";
+        => string.Concat(name.Split(Path.GetInvalidFileNameChars())).Trim() is { Length: > 0 } s ? s : L.T("exp_root_name");
 
     private TreeNode? SelectedOrRoot => _selectedNode?.Node ?? _root;
 
@@ -249,7 +262,7 @@ public sealed class ExplorerViewModel : ObservableObject
             var files = Directory.EnumerateFiles(node.FullPath).ToList();
             if (files.Count == 0)
             {
-                Dialogs.Info("La carpeta seleccionada no tiene archivos directamente dentro.");
+                Dialogs.Info(L.T("exp_no_files"));
                 return;
             }
             _sendToRenamer(files);

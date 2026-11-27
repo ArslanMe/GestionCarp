@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GestionCarp.Core.Common;
+using GestionCarp.Core.Localization;
 using GestionCarp.Core.Rename;
 
 namespace GestionCarp.App.ViewModels;
@@ -74,8 +75,8 @@ public sealed class RenameRowViewModel : ObservableObject
     public string CompanionsText => _companions.Count switch
     {
         0 => "",
-        1 => "+1 subtítulo",
-        _ => $"+{_companions.Count} subtítulos",
+        1 => L.T("ren_one_sub"),
+        _ => L.F("ren_n_subs", _companions.Count),
     };
 
     public string? CompanionsTooltip => _companions.Count == 0
@@ -89,7 +90,7 @@ public sealed class RenameRowViewModel : ObservableObject
         Status = row?.Status ?? RenameStatus.Unchanged;
         Message = row?.Message;
         if (row?.Status != RenameStatus.Error && companions.FirstOrDefault(c => c.Status == RenameStatus.Error) is { } failed)
-            Message = $"Subtítulo {failed.OriginalName}: {failed.Message}";
+            Message = L.F("ren_sub_error", failed.OriginalName, failed.Message);
         _companions = companions;
         OnPropertyChanged(nameof(CompanionsText));
         OnPropertyChanged(nameof(CompanionsTooltip));
