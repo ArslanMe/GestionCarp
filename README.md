@@ -46,9 +46,12 @@ Para cuando los subtítulos tienen nombres distintos a los vídeos (por ejemplo,
 
 ## Descargar
 
-Cada cambio en el repositorio genera el ejecutable automáticamente:
-**Actions → Compilar → (última ejecución) → Artifacts → `GestionCarp-win-x64`**.
-Descomprime y abre `GestionCarp.exe`; no hace falta instalar nada.
+Descarga `GestionCarp.exe` de la última versión en
+**[Releases](https://github.com/ArslanMe/GestionCarp/releases/latest)** y ábrelo; no hace falta instalar nada.
+Cada actualización de `main` publica una versión nueva automáticamente.
+
+Si Windows muestra «Windows protegió su PC» (el programa no está firmado), pulsa
+**Más información → Ejecutar de todas formas**.
 
 ## Compilar desde el código
 
