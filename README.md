@@ -82,6 +82,9 @@ dotnet run --project src/GestionCarp.App
 - Exportar a HTML, Excel y Word; crear carpetas a partir de un árbol pegado.
 - Menú contextual del Explorador de Windows, comparar carpetas, duplicados, renombrar por metadatos.
 
-## Autor
+## Autor y licencia
 
 Creado por **Raudel Camacho** · © 2026 Raudel Camacho
+
+Publicado con la [licencia MIT](LICENSE): puedes usar, copiar, modificar y distribuir el programa libremente,
+siempre que se conserve el aviso de copyright y de licencia.
