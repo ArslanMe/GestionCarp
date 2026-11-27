@@ -1,0 +1,383 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Windows.Input;
+using GestionCarp.App.Services;
+using GestionCarp.Core.Common;
+using GestionCarp.Core.Rename;
+using GestionCarp.Core.Rename.Rules;
+
+namespace GestionCarp.App.ViewModels;
+
+public sealed class RenamerViewModel : ObservableObject
+{
+    private readonly RenameService _service;
+    private readonly HashSet<string> _paths = new(StringComparer.OrdinalIgnoreCase);
+    private List<RenamePreviewRow> _plan = new();
+    private RenameRule? _selectedRule;
+    private bool _renameSubtitlesWithVideo = true;
+    private bool _includeSubfolders;
+    private bool _includeFolders;
+    private string _addFilter = "";
+    private string _summary = "";
+    private bool _suspendRefresh;
+
+    public RenamerViewModel(RenameService service)
+    {
+        _service = service;
+        _service.FilesChanged += (_, executed) => OnFilesChanged(executed);
+        _service.HistoryChanged += (_, _) => OnPropertyChanged(nameof(UndoDescription));
+
+        Rules.CollectionChanged += OnRulesChanged;
+        Items.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasItems));
+            Refresh();
+        };
+
+        AddRuleCommand = new RelayCommand(p => AddRule(p as string));
+        RemoveRuleCommand = new RelayCommand(() => { if (SelectedRule is { } r) Rules.Remove(r); }, () => SelectedRule is not null);
+        MoveRuleUpCommand = new RelayCommand(() => MoveRule(-1), () => SelectedRule is not null && Rules.IndexOf(SelectedRule) > 0);
+        MoveRuleDownCommand = new RelayCommand(() => MoveRule(1), () => SelectedRule is not null && Rules.IndexOf(SelectedRule) < Rules.Count - 1);
+
+        AddFilesCommand = new RelayCommand(AddFiles);
+        AddFolderCommand = new RelayCommand(AddFolder);
+        RemoveSelectedCommand = new RelayCommand(p => RemoveItems(p as IList), p => p is IList { Count: > 0 });
+        ClearCommand = new RelayCommand(ClearItems, () => Items.Count > 0);
+        SortCommand = new RelayCommand(SortItems, () => Items.Count > 1);
+        MoveItemsUpCommand = new RelayCommand(p => MoveItems(p as IList, -1), p => p is IList { Count: > 0 });
+        MoveItemsDownCommand = new RelayCommand(p => MoveItems(p as IList, 1), p => p is IList { Count: > 0 });
+
+        RenameCommand = new RelayCommand(Rename, () => _plan.Any(r => r.IsMoving));
+        UndoCommand = new RelayCommand(Undo, () => _service.CanUndo);
+
+        UpdateSummary();
+    }
+
+    public ObservableCollection<RenameRule> Rules { get; } = new();
+    public ObservableCollection<RenameRowViewModel> Items { get; } = new();
+
+    public ICommand AddRuleCommand { get; }
+    public ICommand RemoveRuleCommand { get; }
+    public ICommand MoveRuleUpCommand { get; }
+    public ICommand MoveRuleDownCommand { get; }
+    public ICommand AddFilesCommand { get; }
+    public ICommand AddFolderCommand { get; }
+    public ICommand RemoveSelectedCommand { get; }
+    public ICommand ClearCommand { get; }
+    public ICommand SortCommand { get; }
+    public ICommand MoveItemsUpCommand { get; }
+    public ICommand MoveItemsDownCommand { get; }
+    public ICommand RenameCommand { get; }
+    public ICommand UndoCommand { get; }
+
+    public RenameRule? SelectedRule
+    {
+        get => _selectedRule;
+        set
+        {
+            if (SetProperty(ref _selectedRule, value))
+                OnPropertyChanged(nameof(HasSelectedRule));
+        }
+    }
+
+    public bool HasSelectedRule => SelectedRule is not null;
+    public bool HasRules => Rules.Count > 0;
+    public bool HasItems => Items.Count > 0;
+
+    public bool RenameSubtitlesWithVideo
+    {
+        get => _renameSubtitlesWithVideo;
+        set { if (SetProperty(ref _renameSubtitlesWithVideo, value)) Refresh(); }
+    }
+
+    public bool IncludeSubfolders { get => _includeSubfolders; set => SetProperty(ref _includeSubfolders, value); }
+    public bool IncludeFolders { get => _includeFolders; set => SetProperty(ref _includeFolders, value); }
+    public string AddFilter { get => _addFilter; set => SetProperty(ref _addFilter, value); }
+
+    public string Summary { get => _summary; private set => SetProperty(ref _summary, value); }
+    public string UndoDescription => _service.UndoDescription;
+
+    // ---------- Reglas ----------
+
+    private void AddRule(string? kind)
+    {
+        RenameRule rule = kind switch
+        {
+            "Reemplazar" => new ReplaceRule(),
+            "Insertar" => new InsertRule(),
+            "Eliminar" => new RemoveRule(),
+            "Mayusculas" => new CaseRule(),
+            _ => new NumberingRule { TextBefore = SuggestSeriesName() },
+        };
+        Rules.Add(rule);
+        SelectedRule = rule;
+    }
+
+    /// <summary>Propone como texto base el nombre de la carpeta de los archivos (suele ser el de la serie).</summary>
+    private string SuggestSeriesName()
+    {
+        var folder = Items.FirstOrDefault()?.Folder;
+        return string.IsNullOrEmpty(folder) ? "" : Path.GetFileName(folder) + " - ";
+    }
+
+    private void MoveRule(int delta)
+    {
+        if (SelectedRule is null) return;
+        var rule = SelectedRule;
+        int index = Rules.IndexOf(rule);
+        int target = index + delta;
+        if (target < 0 || target >= Rules.Count) return;
+        Rules.Move(index, target);
+        SelectedRule = rule;
+    }
+
+    private void OnRulesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems is not null)
+            foreach (RenameRule rule in e.OldItems) rule.PropertyChanged -= OnRulePropertyChanged;
+        if (e.NewItems is not null)
+            foreach (RenameRule rule in e.NewItems) rule.PropertyChanged += OnRulePropertyChanged;
+        OnPropertyChanged(nameof(HasRules));
+        Refresh();
+    }
+
+    private void OnRulePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(RenameRule.Summary))
+            Refresh();
+    }
+
+    // ---------- Lista de archivos ----------
+
+    public void AddPaths(IEnumerable<string> paths)
+    {
+        var filters = WildcardPattern.ParseList(AddFilter);
+        var toAdd = new List<RenameItem>();
+
+        foreach (var raw in paths)
+        {
+            string path = Path.TrimEndingDirectorySeparator(raw);
+            if (Directory.Exists(path))
+                toAdd.AddRange(ExpandFolder(path, filters));
+            else if (File.Exists(path))
+                toAdd.Add(new RenameItem(path, false));
+        }
+
+        _suspendRefresh = true;
+        try
+        {
+            foreach (var item in toAdd.Where(i => _paths.Add(i.FullPath)))
+                Items.Add(new RenameRowViewModel(item));
+        }
+        finally
+        {
+            _suspendRefresh = false;
+        }
+        OnPropertyChanged(nameof(HasItems));
+        Refresh();
+    }
+
+    private IEnumerable<RenameItem> ExpandFolder(string folder, List<WildcardPattern> filters)
+    {
+        var options = new EnumerationOptions { RecurseSubdirectories = IncludeSubfolders, IgnoreInaccessible = true };
+        List<RenameItem> result = new();
+        try
+        {
+            if (IncludeFolders)
+            {
+                result.AddRange(Directory.EnumerateDirectories(folder, "*", options)
+                    .OrderBy(d => d, NaturalStringComparer.Instance)
+                    .Select(d => new RenameItem(d, true)));
+            }
+
+            result.AddRange(Directory.EnumerateFiles(folder, "*", options)
+                .Where(f => filters.Count == 0 || filters.Any(p => p.IsMatch(Path.GetFileName(f))))
+                .OrderBy(f => Path.GetDirectoryName(f), NaturalStringComparer.Instance)
+                .ThenBy(f => Path.GetFileName(f), NaturalStringComparer.Instance)
+                .Select(f => new RenameItem(f, false)));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Dialogs.Error($"No se pudo leer {folder}: {ex.Message}");
+        }
+        return result;
+    }
+
+    private void AddFiles()
+    {
+        var files = Dialogs.PickFiles("Añadir archivos para renombrar");
+        if (files is not null) AddPaths(files);
+    }
+
+    private void AddFolder()
+    {
+        var folder = Dialogs.PickFolder("Añadir el contenido de una carpeta", Items.FirstOrDefault()?.Folder);
+        if (folder is not null) AddPaths(new[] { folder });
+    }
+
+    private void RemoveItems(IList? selected)
+    {
+        if (selected is null) return;
+        var rows = selected.OfType<RenameRowViewModel>().ToList();
+        _suspendRefresh = true;
+        try
+        {
+            foreach (var row in rows)
+            {
+                Items.Remove(row);
+                _paths.Remove(row.Path);
+            }
+        }
+        finally
+        {
+            _suspendRefresh = false;
+        }
+        Refresh();
+    }
+
+    private void ClearItems()
+    {
+        _paths.Clear();
+        Items.Clear();
+    }
+
+    private void SortItems()
+    {
+        var sorted = Items
+            .OrderBy(i => i.Folder, NaturalStringComparer.Instance)
+            .ThenBy(i => i.OriginalName, NaturalStringComparer.Instance)
+            .ToList();
+        _suspendRefresh = true;
+        try
+        {
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                int current = Items.IndexOf(sorted[i]);
+                if (current != i) Items.Move(current, i);
+            }
+        }
+        finally
+        {
+            _suspendRefresh = false;
+        }
+        Refresh();
+    }
+
+    private void MoveItems(IList? selected, int delta)
+    {
+        if (selected is null) return;
+        var rows = selected.OfType<RenameRowViewModel>()
+            .OrderBy(r => Items.IndexOf(r) * -delta)
+            .ToList();
+        _suspendRefresh = true;
+        try
+        {
+            foreach (var row in rows)
+            {
+                int index = Items.IndexOf(row);
+                int target = index + delta;
+                if (target < 0 || target >= Items.Count || rows.Contains(Items[target])) continue;
+                Items.Move(index, target);
+            }
+        }
+        finally
+        {
+            _suspendRefresh = false;
+        }
+        Refresh();
+    }
+
+    // ---------- Vista previa y ejecución ----------
+
+    public void Refresh()
+    {
+        if (_suspendRefresh) return;
+
+        var items = Items.Select(i => i.ToItem()).ToList();
+        _plan = RenamePlanner.Plan(items, Rules.ToList(), new RenamePlanOptions { RenameSubtitlesWithVideo = RenameSubtitlesWithVideo });
+
+        var bySource = _plan.GroupBy(r => r.SourcePath, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+        var companionsByGroup = _plan
+            .Where(r => r.IsCompanion && !_paths.Contains(r.SourcePath))
+            .GroupBy(r => r.GroupKey, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<RenamePreviewRow>)g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var row in Items)
+        {
+            bySource.TryGetValue(row.Path, out var planRow);
+            row.Update(planRow, companionsByGroup.GetValueOrDefault(row.Path) ?? Array.Empty<RenamePreviewRow>());
+        }
+
+        UpdateSummary();
+        CommandManager.InvalidateRequerySuggested();
+    }
+
+    private void UpdateSummary()
+    {
+        if (Items.Count == 0)
+        {
+            Summary = "Añade archivos o arrástralos a la lista.";
+            return;
+        }
+
+        int changing = _plan.Count(r => r.IsMoving && !r.IsCompanion);
+        int subtitles = _plan.Count(r => r.IsMoving && r.IsCompanion);
+        int errors = _plan.Count(r => r.Status == RenameStatus.Error);
+        int warnings = _plan.Count(r => r.Status == RenameStatus.Warning);
+
+        var parts = new List<string> { $"{Items.Count:N0} elementos", $"{changing:N0} cambian" };
+        if (subtitles > 0) parts.Add($"{subtitles:N0} subtítulos les acompañan");
+        if (warnings > 0) parts.Add($"{warnings:N0} avisos");
+        if (errors > 0) parts.Add($"{errors:N0} con errores (no se renombrarán)");
+        Summary = string.Join(" · ", parts);
+    }
+
+    private void Rename()
+    {
+        Refresh();
+        var operations = RenamePlanner.ToOperations(_plan);
+        if (operations.Count == 0)
+        {
+            Dialogs.Info("No hay ningún cambio que aplicar.");
+            return;
+        }
+
+        int errors = _plan.Count(r => r.Status == RenameStatus.Error);
+        string message = $"Se van a renombrar {operations.Count:N0} elementos.";
+        if (errors > 0) message += $"\n{errors:N0} elementos con errores se dejarán como están.";
+        message += "\n\nPodrás deshacerlo con «Deshacer». ¿Continuar?";
+        if (!Dialogs.Confirm(message)) return;
+
+        var result = _service.Execute(operations, $"Renombrar {operations.Count} elementos");
+        if (!result.Success)
+            Dialogs.Error(result.Error ?? "Error desconocido");
+    }
+
+    private void Undo()
+    {
+        if (!Dialogs.Confirm(_service.UndoDescription + "?")) return;
+        var result = _service.Undo();
+        if (!result.Success)
+            Dialogs.Error(result.Error ?? "Error desconocido");
+    }
+
+    /// <summary>Tras renombrar o deshacer (aquí o en otra pestaña), actualiza las rutas de la lista.</summary>
+    private void OnFilesChanged(IReadOnlyList<RenameOperation> executed)
+    {
+        _paths.Clear();
+        foreach (var row in Items)
+        {
+            row.Path = PathRebaser.Rebase(row.Path, executed);
+            _paths.Add(row.Path);
+        }
+        OnPropertyChanged(nameof(UndoDescription));
+        Refresh();
+    }
+}

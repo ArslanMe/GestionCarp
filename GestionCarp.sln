@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3A3A411A-C592-4FFB-B076-18074AF97536}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionCarp.Core", "src\GestionCarp.Core\GestionCarp.Core.csproj", "{40E1AFB6-C81A-4A16-8284-2C52E8C0A82E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{02709852-C5A1-4D30-B4C2-4E9B4C339BC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionCarp.Core.Tests", "tests\GestionCarp.Core.Tests\GestionCarp.Core.Tests.csproj", "{B5212068-0117-49E7-91E7-C3F5125CB7CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40E1AFB6-C81A-4A16-8284-2C52E8C0A82E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40E1AFB6-C81A-4A16-8284-2C52E8C0A82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40E1AFB6-C81A-4A16-8284-2C52E8C0A82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40E1AFB6-C81A-4A16-8284-2C52E8C0A82E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5212068-0117-49E7-91E7-C3F5125CB7CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5212068-0117-49E7-91E7-C3F5125CB7CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5212068-0117-49E7-91E7-C3F5125CB7CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5212068-0117-49E7-91E7-C3F5125CB7CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{40E1AFB6-C81A-4A16-8284-2C52E8C0A82E} = {3A3A411A-C592-4FFB-B076-18074AF97536}
+		{B5212068-0117-49E7-91E7-C3F5125CB7CA} = {02709852-C5A1-4D30-B4C2-4E9B4C339BC1}
+	EndGlobalSection
+EndGlobal
