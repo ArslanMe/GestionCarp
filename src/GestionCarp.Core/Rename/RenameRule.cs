@@ -28,6 +28,7 @@ public sealed record RenameContext(int Index, int IndexInFolder, int Total, stri
 [JsonDerivedType(typeof(CaseRule), "mayusculas")]
 [JsonDerivedType(typeof(CleanupRule), "limpiar")]
 [JsonDerivedType(typeof(SeriesTemplateRule), "plantilla_series")]
+[JsonDerivedType(typeof(MetadataRule), "metadatos")]
 public abstract class RenameRule : ObservableObject
 {
     private bool _isEnabled = true;

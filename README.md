@@ -30,6 +30,8 @@ para que el reproductor los cargue solo.
   - **Plantilla de series**: `{serie} - T{temp:00}E{ep:00} - {titulo}` → `Mi Serie - T01E05 - Piloto`.
     Detecta temporada y episodio en el nombre (o la temporada en carpetas como `Temporada 2`).
   - **Limpiar nombres**: `[Grupo] Mi.Serie.S01E02.1080p.WEB-DL.x264-XYZ` → `Mi Serie S01E02`.
+  - **Metadatos**: `{fecha:yyyy-MM-dd HH.mm.ss}` o `{pista:00} - {titulo}` con datos internos de fotos (EXIF de
+    JPEG, PNG), música (MP3, FLAC, M4A) y vídeo (MP4, MOV): fecha, cámara, resolución, artista, álbum, duración…
   - **Reemplazar** (texto o expresión regular), **Insertar**, **Eliminar** (primeros/últimos caracteres,
     un tramo o todo lo que hay entre `[` `]`), **Mayúsculas/minúsculas**.
 - **Presets**: guarda combinaciones de reglas con un nombre, cárgalas con un clic y expórtalas a un archivo
@@ -56,7 +58,18 @@ Para cuando los subtítulos tienen nombres distintos a los vídeos (por ejemplo,
   dentro de la carpeta que elijas. Vista previa con lo que se creará, lo que ya existe y los nombres no válidos.
 - Opcionalmente crea también los archivos (vacíos). Se puede **deshacer**: borra solo lo creado que siga vacío.
 
+### ⚖️ Comparar carpetas
+- Muestra qué está solo en A, solo en B y qué es distinto (por nombre y tamaño, también fecha, o contenido exacto).
+- **Copia lo que falta** de una carpeta a otra sin sobrescribir nunca nada (se puede deshacer) y copia un informe.
+
+### 👯 Duplicados
+- Encuentra archivos idénticos por contenido en una o varias carpetas, aunque tengan otro nombre.
+- Marca automáticamente las copias sobrantes (conservando la más antigua, la más reciente o la de ruta más corta)
+  y las envía a la **Papelera de reciclaje**.
+
 ### General
+- **Menú contextual del Explorador** (opcional, *Archivo*): clic derecho en una carpeta → *GestionCarp* (explorar,
+  renombrar, subtítulos, comparar, duplicados, crear carpetas) y en archivos → *Renombrar con GestionCarp*.
 - Interfaz en **español, inglés y portugués** (menú *Idioma*); el cambio es inmediato y se recuerda.
 - **Buscar actualizaciones** (menú *Ayuda*): compara tu versión con la última publicada en GitHub y, si hay una
   nueva, la descarga, sustituye el programa y lo reinicia. Puede comprobarse automáticamente al iniciar.
@@ -91,9 +104,6 @@ dotnet run --project src/GestionCarp.App
 | `src/GestionCarp.App` | Interfaz WPF (MVVM). |
 | `tests/GestionCarp.Core.Tests` | Pruebas automáticas de la lógica. |
 
-## Próximas fases
-
-- Menú contextual del Explorador de Windows, comparar carpetas, duplicados, renombrar por metadatos.
 
 ## Autor y licencia
 

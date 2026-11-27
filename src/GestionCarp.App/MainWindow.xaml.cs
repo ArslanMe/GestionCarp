@@ -12,11 +12,28 @@ public partial class MainWindow : Window
     private const double PreferredHeight = 780;
     private const double ScreenMargin = 24;
 
-    public MainWindow()
+    private readonly MainViewModel _viewModel = new();
+    private readonly string[] _startupArgs;
+
+    public MainWindow() : this(Array.Empty<string>()) { }
+
+    public MainWindow(string[] startupArgs)
     {
+        _startupArgs = startupArgs;
         InitializeComponent();
-        DataContext = new MainViewModel();
+        DataContext = _viewModel;
         PlaceOnScreen();
+    }
+
+    /// <summary>Argumentos recibidos al abrir (o desde otra copia): «--renombrar ruta», «--explorar ruta»...</summary>
+    public void HandleArguments(string[] args)
+    {
+        if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+        Activate();
+        Topmost = true;  // traerla al frente aunque Windows no lo permita directamente
+        Topmost = false;
+        Focus();
+        _viewModel.HandleArguments(args);
     }
 
     /// <summary>
@@ -78,6 +95,7 @@ public partial class MainWindow : Window
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        if (_startupArgs.Length > 0) _viewModel.HandleArguments(_startupArgs);
         if (App.Settings.CheckUpdatesOnStartup)
             await Updater.CheckAsync(silent: true);
     }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using GestionCarp.App.Services;
@@ -24,6 +25,8 @@ public sealed class MainViewModel : ObservableObject
         Renamer = new RenamerViewModel(service);
         Subtitles = new SubtitlesViewModel(service);
         Structure = new StructureViewModel(service);
+        Compare = new CompareViewModel(service);
+        Duplicates = new DuplicatesViewModel();
         Explorer = new ExplorerViewModel(
             sendToRenamer: paths =>
             {
@@ -53,6 +56,8 @@ public sealed class MainViewModel : ObservableObject
             1 => "renombrar",
             2 => "subtitulos",
             3 => "crear",
+            4 => "comparar",
+            5 => "duplicados",
             _ => "inicio",
         }));
 
@@ -65,6 +70,9 @@ public sealed class MainViewModel : ObservableObject
             Renamer.OnLanguageChanged();
             Subtitles.OnLanguageChanged();
             Structure.OnLanguageChanged();
+            Compare.OnLanguageChanged();
+            Duplicates.OnLanguageChanged();
+            App.RefreshShellIntegration();
         };
     }
 
@@ -72,6 +80,8 @@ public sealed class MainViewModel : ObservableObject
     public RenamerViewModel Renamer { get; }
     public SubtitlesViewModel Subtitles { get; }
     public StructureViewModel Structure { get; }
+    public CompareViewModel Compare { get; }
+    public DuplicatesViewModel Duplicates { get; }
 
     public ICommand ExitCommand { get; }
     public ICommand SetLanguageCommand { get; }
@@ -94,6 +104,75 @@ public sealed class MainViewModel : ObservableObject
             App.Settings.CheckUpdatesOnStartup = value;
             App.Settings.Save();
             OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Activa o quita «GestionCarp» del menú contextual del Explorador de Windows.</summary>
+    public bool ExplorerMenu
+    {
+        get => App.Settings.ExplorerMenu;
+        set
+        {
+            try
+            {
+                if (value) ShellIntegration.Install();
+                else ShellIntegration.Uninstall();
+                App.Settings.ExplorerMenu = value;
+                App.Settings.Save();
+                if (value) Dialogs.Info(L.T("shell_installed"));
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or InvalidOperationException or IOException)
+            {
+                Dialogs.Error(L.F("shell_failed", ex.Message));
+            }
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Atiende los argumentos de línea de comandos (menú contextual del Explorador o arrastrar sobre el .exe):
+    /// «--explorar ruta», «--renombrar rutas…», «--subtitulos», «--comparar», «--duplicados», «--crear», o solo rutas.
+    /// </summary>
+    public void HandleArguments(string[] args)
+    {
+        if (args.Length == 0) return;
+        string verb = args[0].StartsWith("--", StringComparison.Ordinal) ? args[0][2..].ToLowerInvariant() : "explorar";
+        var paths = (args[0].StartsWith("--", StringComparison.Ordinal) ? args.Skip(1) : args)
+            .Select(p => p.Trim().Trim('"'))
+            .Where(p => p.Length > 0 && (Directory.Exists(p) || File.Exists(p)))
+            .ToList();
+        if (paths.Count == 0) return;
+        string folder = Directory.Exists(paths[0]) ? paths[0] : Path.GetDirectoryName(paths[0]) ?? paths[0];
+
+        switch (verb)
+        {
+            case "renombrar":
+                Renamer.AddPaths(paths);
+                SelectedTab = 1;
+                break;
+            case "subtitulos":
+                Subtitles.FolderPath = folder;
+                Subtitles.Analyze();
+                SelectedTab = 2;
+                break;
+            case "crear":
+                Structure.Destination = folder;
+                SelectedTab = 3;
+                break;
+            case "comparar":
+                Compare.AddFolder(folder);
+                SelectedTab = 4;
+                break;
+            case "duplicados":
+                foreach (var p in paths.Where(Directory.Exists)) Duplicates.AddFolder(p, search: false);
+                _ = Duplicates.SearchAsync();
+                SelectedTab = 5;
+                break;
+            default:
+                Explorer.RootPath = folder;
+                _ = Explorer.ScanAsync();
+                SelectedTab = 0;
+                break;
         }
     }
 

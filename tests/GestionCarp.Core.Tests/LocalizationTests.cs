@@ -74,7 +74,7 @@ public class HelpGuideTests
         string html = File.ReadAllText(Path.Combine(dir!.FullName, "src", "GestionCarp.App", "Assets", "Help", "guia.html"));
 
         // Los apartados que abre F1 desde cada pestaña, más los del índice.
-        var sections = new[] { "inicio", "explorador", "renombrar", "reglas", "series", "presets", "subtitulos", "crear", "deshacer", "ajustes", "faq" };
+        var sections = new[] { "inicio", "explorador", "renombrar", "reglas", "series", "metadatos", "presets", "subtitulos", "crear", "comparar", "duplicados", "integracion", "deshacer", "ajustes", "faq" };
         foreach (var lang in new[] { "es", "en", "pt" })
         {
             Assert.Contains($"<article lang=\"{lang}\">", html);

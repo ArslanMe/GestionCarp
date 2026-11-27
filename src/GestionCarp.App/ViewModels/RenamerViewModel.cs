@@ -96,6 +96,9 @@ public sealed class RenamerViewModel : ObservableObject
     public string? SelectedPreset { get => _selectedPreset; set => SetProperty(ref _selectedPreset, value); }
 
     /// <summary>Ejemplos para el desplegable de plantillas de series.</summary>
+    /// <summary>Ejemplos de plantillas de metadatos, con los marcadores del idioma actual.</summary>
+    public IReadOnlyList<string> MetadataTemplateExamples => MetadataRule.Examples();
+
     public static IReadOnlyList<string> SeriesTemplateExamples { get; } = new[]
     {
         "{serie} - T{temp:00}E{ep:00}",
@@ -146,6 +149,7 @@ public sealed class RenamerViewModel : ObservableObject
             "Mayusculas" => new CaseRule(),
             "Limpiar" => new CleanupRule(),
             "Serie" => new SeriesTemplateRule(),
+            "Metadatos" => new MetadataRule(),
             _ => new NumberingRule { TextBefore = SuggestSeriesName() },
         };
         Rules.Add(rule);
@@ -487,6 +491,7 @@ public sealed class RenamerViewModel : ObservableObject
     {
         foreach (var rule in Rules) rule.RefreshTexts();
         OnPropertyChanged(nameof(UndoDescription));
+        OnPropertyChanged(nameof(MetadataTemplateExamples));
         Refresh();
     }
 

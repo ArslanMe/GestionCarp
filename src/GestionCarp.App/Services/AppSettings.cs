@@ -15,6 +15,9 @@ public sealed class AppSettings
 
     public bool CheckUpdatesOnStartup { get; set; } = true;
 
+    /// <summary>El usuario activó «GestionCarp» en el menú contextual del Explorador.</summary>
+    public bool ExplorerMenu { get; set; }
+
     /// <summary>Posición y tamaño de la ventana al cerrarla (en píxeles lógicos). Null = sin guardar.</summary>
     public double? WindowLeft { get; set; }
     public double? WindowTop { get; set; }

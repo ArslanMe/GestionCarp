@@ -16,6 +16,8 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" Padding="4,2" Background="{StaticResource PanelBrush}">
             <MenuItem Header="{l:Tr menu_file}">
+                <MenuItem Header="{l:Tr menu_shell}" IsCheckable="True" IsChecked="{Binding ExplorerMenu}" ToolTip="{l:Tr menu_shell_tip}"/>
+                <Separator/>
                 <MenuItem Header="{l:Tr menu_exit}" Command="{Binding ExitCommand}" InputGestureText="Alt+F4"/>
             </MenuItem>
             <MenuItem Header="{l:Tr menu_language}">
@@ -49,6 +51,12 @@
             </TabItem>
             <TabItem Header="{l:Tr tab_struct}" Padding="12,4">
                 <views:StructureView DataContext="{Binding Structure}"/>
+            </TabItem>
+            <TabItem Header="{l:Tr tab_compare}" Padding="12,4">
+                <views:CompareView DataContext="{Binding Compare}"/>
+            </TabItem>
+            <TabItem Header="{l:Tr tab_duplicates}" Padding="12,4">
+                <views:DuplicatesView DataContext="{Binding Duplicates}"/>
             </TabItem>
         </TabControl>
     </DockPanel>

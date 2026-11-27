@@ -1,0 +1,106 @@
+<UserControl x:Class="GestionCarp.App.Views.CompareView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:GestionCarp.App.Localization"
+             xmlns:vm="clr-namespace:GestionCarp.App.ViewModels"
+             xmlns:cmp="clr-namespace:GestionCarp.Core.Compare;assembly=GestionCarp.Core">
+    <DockPanel Margin="10">
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{l:Tr cmp_folder_a}" Style="{StaticResource FieldLabel}" FontWeight="SemiBold"/>
+            <TextBox Grid.Column="1" Text="{Binding Left, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"
+                     AllowDrop="True" PreviewDragOver="OnFolderDragOver" PreviewDrop="OnDropLeft"/>
+            <Button Grid.Column="2" Content="{l:Tr btn_browse}" Command="{Binding BrowseLeftCommand}" Margin="6,0,0,4"/>
+            <Button Grid.Column="3" Grid.RowSpan="2" Content="⇅" Command="{Binding SwapCommand}" ToolTip="{l:Tr cmp_swap}"
+                    Margin="0,0,0,4" FontSize="16"/>
+            <TextBlock Grid.Row="1" Text="{l:Tr cmp_folder_b}" Style="{StaticResource FieldLabel}" FontWeight="SemiBold"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Right, UpdateSourceTrigger=PropertyChanged}"
+                     AllowDrop="True" PreviewDragOver="OnFolderDragOver" PreviewDrop="OnDropRight"/>
+            <Button Grid.Row="1" Grid.Column="2" Content="{l:Tr btn_browse}" Command="{Binding BrowseRightCommand}" Margin="6,0,0,0"/>
+        </Grid>
+
+        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+            <TextBlock Text="{l:Tr cmp_mode}" Style="{StaticResource FieldLabel}"/>
+            <ComboBox Width="290" Margin="0,0,14,4" ItemsSource="{x:Static vm:Choices.CompareModes}" DisplayMemberPath="Label"
+                      SelectedValuePath="Value" SelectedValue="{Binding Mode}"/>
+            <CheckBox Content="{l:Tr lbl_subfolders}" IsChecked="{Binding IncludeSubfolders}" Margin="0,0,14,4"/>
+            <CheckBox Content="{l:Tr exp_hidden}" IsChecked="{Binding IncludeHidden}" Margin="0,0,14,4"/>
+            <TextBlock Text="{l:Tr exp_exclude}" Style="{StaticResource FieldLabel}"/>
+            <TextBox Width="200" Margin="0,0,14,4" Text="{Binding ExcludePatterns}" ToolTip="{l:Tr exp_exclude_tip}"/>
+            <Button Content="{l:Tr cmp_compare}" Command="{Binding CompareCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,6,4"/>
+            <Button Content="{l:Tr btn_cancel}" Command="{Binding CancelCommand}" Margin="0,0,6,4"
+                    Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}"/>
+        </WrapPanel>
+
+        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <TextBlock Text="{l:Tr cmp_show}" Style="{StaticResource FieldLabel}"/>
+            <CheckBox Content="{l:Tr cmp_show_different}" IsChecked="{Binding ShowDifferent}"/>
+            <CheckBox Content="{l:Tr cmp_show_only_a}" IsChecked="{Binding ShowOnlyLeft}"/>
+            <CheckBox Content="{l:Tr cmp_show_only_b}" IsChecked="{Binding ShowOnlyRight}"/>
+            <CheckBox Content="{l:Tr cmp_show_equal}" IsChecked="{Binding ShowEqual}"/>
+        </WrapPanel>
+
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+            <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right">
+                <Button Content="{l:Tr cmp_report}" Command="{Binding CopyReportCommand}" Margin="0,0,6,4"/>
+                <Button Content="{l:Tr btn_undo}" Command="{Binding UndoCommand}" ToolTip="{Binding UndoDescription}" Margin="0,0,6,4"/>
+                <Button Content="{l:Tr cmp_copy_to_a}" Command="{Binding CopyToLeftCommand}" Margin="0,0,6,4" ToolTip="{l:Tr cmp_copy_tip}"/>
+                <Button Content="{l:Tr cmp_copy_to_b}" Command="{Binding CopyToRightCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,0,4"
+                        ToolTip="{l:Tr cmp_copy_tip}"/>
+            </WrapPanel>
+            <TextBlock Text="{Binding Summary}" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+        </DockPanel>
+
+        <Grid>
+            <DataGrid ItemsSource="{Binding Rows}" AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserSortColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                      HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EEEEEE"
+                      Background="White" EnableRowVirtualization="True">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="ToolTip" Value="{Binding Detail}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static cmp:CompareStatus.Different}">
+                                <Setter Property="Background" Value="{StaticResource WarningRowBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static cmp:CompareStatus.TypeMismatch}">
+                                <Setter Property="Background" Value="{StaticResource ErrorRowBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static cmp:CompareStatus.OnlyInLeft}">
+                                <Setter Property="Background" Value="#EAF1FF"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static cmp:CompareStatus.OnlyInRight}">
+                                <Setter Property="Background" Value="#F3ECFF"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="{x:Static cmp:CompareStatus.Equal}">
+                                <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="" Binding="{Binding StatusIcon}" Width="26"/>
+                    <DataGridTextColumn Header="{l:Tr col_item}" Binding="{Binding Display}" Width="*"/>
+                    <DataGridTextColumn Header="{l:Tr cmp_col_status}" Binding="{Binding StatusLabel}" Width="110"/>
+                    <DataGridTextColumn Header="{l:Tr cmp_col_size_a}" Binding="{Binding SizeLeft}" Width="90"/>
+                    <DataGridTextColumn Header="{l:Tr cmp_col_size_b}" Binding="{Binding SizeRight}" Width="90"/>
+                    <DataGridTextColumn Header="{l:Tr cmp_col_date_a}" Binding="{Binding DateLeft}" Width="125"/>
+                    <DataGridTextColumn Header="{l:Tr cmp_col_date_b}" Binding="{Binding DateRight}" Width="125"/>
+                    <DataGridTextColumn Header="{l:Tr col_notes}" Binding="{Binding Detail}" Width="170"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock Text="{l:Tr cmp_empty_hint}" Style="{StaticResource Hint}" FontSize="13" TextAlignment="Center"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
+                       Visibility="{Binding HasRows, Converter={StaticResource InverseBoolToVisibility}}"/>
+        </Grid>
+    </DockPanel>
+</UserControl>
