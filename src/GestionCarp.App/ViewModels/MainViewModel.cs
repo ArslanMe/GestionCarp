@@ -23,6 +23,7 @@ public sealed class MainViewModel : ObservableObject
 
         Renamer = new RenamerViewModel(service);
         Subtitles = new SubtitlesViewModel(service);
+        Structure = new StructureViewModel(service);
         Explorer = new ExplorerViewModel(
             sendToRenamer: paths =>
             {
@@ -34,6 +35,11 @@ public sealed class MainViewModel : ObservableObject
                 Subtitles.FolderPath = folder;
                 Subtitles.Analyze();
                 SelectedTab = 2;
+            },
+            sendToStructure: (text, destination) =>
+            {
+                Structure.LoadTemplate(text, destination);
+                SelectedTab = 3;
             });
 
         ExitCommand = new RelayCommand(() => Application.Current.Shutdown());
@@ -50,12 +56,14 @@ public sealed class MainViewModel : ObservableObject
             Explorer.OnLanguageChanged();
             Renamer.OnLanguageChanged();
             Subtitles.OnLanguageChanged();
+            Structure.OnLanguageChanged();
         };
     }
 
     public ExplorerViewModel Explorer { get; }
     public RenamerViewModel Renamer { get; }
     public SubtitlesViewModel Subtitles { get; }
+    public StructureViewModel Structure { get; }
 
     public ICommand ExitCommand { get; }
     public ICommand SetLanguageCommand { get; }

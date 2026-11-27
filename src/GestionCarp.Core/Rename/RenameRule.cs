@@ -1,4 +1,6 @@
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
+using GestionCarp.Core.Rename.Rules;
 using GestionCarp.Core.Common;
 
 namespace GestionCarp.Core.Rename;
@@ -18,6 +20,14 @@ public enum RuleScope
 public sealed record RenameContext(int Index, int IndexInFolder, int Total, string OriginalPath, bool IsDirectory);
 
 /// <summary>Una regla de renombrado. Las reglas se aplican en cadena, en el orden de la lista.</summary>
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "regla")]
+[JsonDerivedType(typeof(NumberingRule), "numerar")]
+[JsonDerivedType(typeof(ReplaceRule), "reemplazar")]
+[JsonDerivedType(typeof(InsertRule), "insertar")]
+[JsonDerivedType(typeof(RemoveRule), "eliminar")]
+[JsonDerivedType(typeof(CaseRule), "mayusculas")]
+[JsonDerivedType(typeof(CleanupRule), "limpiar")]
+[JsonDerivedType(typeof(SeriesTemplateRule), "plantilla_series")]
 public abstract class RenameRule : ObservableObject
 {
     private bool _isEnabled = true;
@@ -28,10 +38,10 @@ public abstract class RenameRule : ObservableObject
     public RuleScope Scope { get => _scope; set => SetProperty(ref _scope, value); }
 
     /// <summary>Nombre del tipo de regla ("Numerar", "Reemplazar"...).</summary>
-    public abstract string DisplayName { get; }
+    [JsonIgnore] public abstract string DisplayName { get; }
 
     /// <summary>Resumen de la configuración, para mostrar en la lista de reglas.</summary>
-    public abstract string Summary { get; }
+    [JsonIgnore] public abstract string Summary { get; }
 
     /// <summary>Transforma el texto (nombre, extensión o ambos según <see cref="Scope"/>).</summary>
     protected abstract string ApplyCore(string text, RenameContext context);

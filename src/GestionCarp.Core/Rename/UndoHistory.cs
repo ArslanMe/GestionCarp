@@ -28,7 +28,7 @@ public sealed class UndoHistory
 
     public void Push(RenameBatch batch)
     {
-        if (batch.Operations.Count == 0) return;
+        if (batch.Operations.Count == 0 && batch.CreatedPaths.Count == 0) return;
         _batches.Add(batch);
         if (_batches.Count > MaxEntries)
             _batches.RemoveRange(0, _batches.Count - MaxEntries);
@@ -40,7 +40,7 @@ public sealed class UndoHistory
     public RenameResult UndoLast()
     {
         var batch = Last ?? throw new InvalidOperationException(L.T("hist_empty"));
-        var result = RenameExecutor.Undo(batch);
+        var result = batch.CreatedPaths.Count > 0 ? Structure.StructureBuilder.Undo(batch) : RenameExecutor.Undo(batch);
         if (result.Success)
         {
             _batches.RemoveAt(_batches.Count - 1);

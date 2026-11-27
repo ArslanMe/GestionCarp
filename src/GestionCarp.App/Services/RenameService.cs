@@ -41,6 +41,25 @@ public sealed class RenameService
         return result;
     }
 
+    /// <summary>Registra en el historial algo ya hecho fuera del ejecutor (por ejemplo, crear carpetas).</summary>
+    public void Record(RenameResult result)
+    {
+        if (!result.Success || result.Batch is null) return;
+        History.Push(result.Batch);
+        FilesChanged?.Invoke(this, result.Executed);
+    }
+
+    /// <summary>Pregunta, deshace lo último y muestra el resultado.</summary>
+    public void UndoWithConfirmation()
+    {
+        if (!Dialogs.Confirm(UndoDescription + "?")) return;
+        var result = Undo();
+        if (!result.Success)
+            Dialogs.Error(result.Error ?? L.T("err_unknown"));
+        else if (result.Notice is not null)
+            Dialogs.Info(result.Notice);
+    }
+
     public RenameResult Undo()
     {
         var result = History.UndoLast();

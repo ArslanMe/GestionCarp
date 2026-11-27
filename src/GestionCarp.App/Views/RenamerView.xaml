@@ -153,6 +153,44 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type rules:SeriesTemplateRule}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/><RowDefinition/><RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{l:Tr series_template}" Style="{StaticResource FormLabel}"/>
+                    <ComboBox Grid.Column="1" Margin="0,3" IsEditable="True"
+                              ItemsSource="{x:Static vm:RenamerViewModel.SeriesTemplateExamples}"
+                              Text="{Binding Template, UpdateSourceTrigger=PropertyChanged}"
+                              ToolTip="{l:Tr series_template_tip}"/>
+                    <TextBlock Grid.Row="1" Text="{l:Tr series_name}" Style="{StaticResource FormLabel}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="0,3" Text="{Binding SeriesName, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="{l:Tr series_name_tip}"/>
+                    <TextBlock Grid.Row="2" Text="{l:Tr series_default_season}" Style="{StaticResource FormLabel}"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,3" Width="50" HorizontalAlignment="Left"
+                             Text="{Binding DefaultSeason, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="{l:Tr series_default_season_tip}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource Hint}" Margin="0,8,0,0" Text="{l:Tr series_help}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type rules:CleanupRule}">
+            <StackPanel>
+                <CheckBox Content="{l:Tr clean_separators}" IsChecked="{Binding ReplaceSeparators}" Margin="0,3"/>
+                <CheckBox Content="{l:Tr clean_brackets}" IsChecked="{Binding RemoveBrackets}" Margin="0,3"/>
+                <CheckBox Content="{l:Tr clean_parens}" IsChecked="{Binding RemoveParentheses}" Margin="0,3"/>
+                <CheckBox Content="{l:Tr clean_tags}" IsChecked="{Binding RemoveReleaseTags}" Margin="0,3"/>
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ScopeEditor}"/>
+                <TextBlock Style="{StaticResource Hint}" Margin="0,8,0,0" Text="{l:Tr clean_example}"/>
+            </StackPanel>
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type rules:CaseRule}">
             <StackPanel>
                 <Grid>
@@ -178,6 +216,21 @@
 
         <!-- Reglas -->
         <DockPanel Grid.Column="0">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                <TextBlock Text="{l:Tr preset_label}" Style="{StaticResource FieldLabel}" FontWeight="SemiBold"/>
+                <Menu DockPanel.Dock="Right" Background="Transparent" VerticalAlignment="Center" Margin="6,0,0,0">
+                    <MenuItem Header="⋯" Padding="8,4" BorderBrush="#BBB" BorderThickness="1" ToolTip="{l:Tr preset_more}">
+                        <MenuItem Header="{l:Tr preset_save}" Command="{Binding SavePresetCommand}"/>
+                        <MenuItem Header="{l:Tr preset_delete}" Command="{Binding DeletePresetCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="{l:Tr preset_export}" Command="{Binding ExportPresetCommand}"/>
+                        <MenuItem Header="{l:Tr preset_import}" Command="{Binding ImportPresetCommand}"/>
+                    </MenuItem>
+                </Menu>
+                <Button DockPanel.Dock="Right" Content="{l:Tr preset_load}" Command="{Binding LoadPresetCommand}" Margin="6,0,0,0"
+                        ToolTip="{l:Tr preset_load_tip}"/>
+                <ComboBox ItemsSource="{Binding PresetNames}" SelectedItem="{Binding SelectedPreset}"/>
+            </DockPanel>
             <TextBlock DockPanel.Dock="Top" Text="{l:Tr ren_rules}" FontWeight="SemiBold" FontSize="15"/>
             <TextBlock DockPanel.Dock="Top" Text="{l:Tr ren_rules_hint}"
                        Style="{StaticResource Hint}" Margin="0,2,0,6"/>
@@ -185,6 +238,9 @@
                 <Menu Background="Transparent" Margin="0,0,6,0" VerticalAlignment="Center">
                     <MenuItem Header="{l:Tr ren_add_rule}" Padding="10,5" BorderBrush="#BBB" BorderThickness="1">
                         <MenuItem Header="{l:Tr ren_add_num}" Command="{Binding AddRuleCommand}" CommandParameter="Numerar"/>
+                        <MenuItem Header="{l:Tr ren_add_series}" Command="{Binding AddRuleCommand}" CommandParameter="Serie"/>
+                        <MenuItem Header="{l:Tr ren_add_clean}" Command="{Binding AddRuleCommand}" CommandParameter="Limpiar"/>
+                        <Separator/>
                         <MenuItem Header="{l:Tr ren_add_replace}" Command="{Binding AddRuleCommand}" CommandParameter="Reemplazar"/>
                         <MenuItem Header="{l:Tr ren_add_insert}" Command="{Binding AddRuleCommand}" CommandParameter="Insertar"/>
                         <MenuItem Header="{l:Tr ren_add_remove}" Command="{Binding AddRuleCommand}" CommandParameter="Eliminar"/>

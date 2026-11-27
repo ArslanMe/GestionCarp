@@ -56,6 +56,8 @@
                         <Button Content="{l:Tr exp_send_rename}" Command="{Binding SendToRenamerCommand}" Margin="0,0,6,4"
                                 ToolTip="{l:Tr exp_send_rename_tip}"/>
                         <Button Content="{l:Tr exp_send_subs}" Command="{Binding SendToSubtitlesCommand}" Margin="0,0,6,4"/>
+                        <Button Content="{l:Tr exp_use_template}" Command="{Binding UseAsTemplateCommand}" Margin="0,0,6,4"
+                                ToolTip="{l:Tr exp_use_template_tip}"/>
                         <Button Content="{l:Tr exp_open_explorer}" Command="{Binding OpenInExplorerCommand}" Margin="0,0,6,4"/>
                     </WrapPanel>
                     <Grid>

@@ -42,6 +42,9 @@
             <TabItem Header="{l:Tr tab_subs}" Padding="12,4">
                 <views:SubtitlesView DataContext="{Binding Subtitles}"/>
             </TabItem>
+            <TabItem Header="{l:Tr tab_struct}" Padding="12,4">
+                <views:StructureView DataContext="{Binding Structure}"/>
+            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>
