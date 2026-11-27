@@ -61,6 +61,9 @@ Para cuando los subtítulos tienen nombres distintos a los vídeos (por ejemplo,
 - **Buscar actualizaciones** (menú *Ayuda*): compara tu versión con la última publicada en GitHub y, si hay una
   nueva, la descarga, sustituye el programa y lo reinicia. Puede comprobarse automáticamente al iniciar.
 - Ventana **Acerca de** con la versión instalada y el autor.
+- **Guía de uso** integrada (menú *Ayuda* o tecla <kbd>F1</kbd>): se abre en el navegador sin conexión, en el
+  apartado de la pestaña en la que estés y en el idioma elegido.
+- La ventana se adapta al tamaño de la pantalla la primera vez y recuerda su tamaño y posición.
 
 ## Descargar
 

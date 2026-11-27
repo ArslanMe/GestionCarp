@@ -63,3 +63,28 @@ public class LocalizationTests
         return dir?.FullName ?? throw new InvalidOperationException("No se encontró GestionCarp.sln");
     }
 }
+
+public class HelpGuideTests
+{
+    [Fact]
+    public void GuideHasEverySectionInEveryLanguage()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "GestionCarp.sln"))) dir = dir.Parent;
+        string html = File.ReadAllText(Path.Combine(dir!.FullName, "src", "GestionCarp.App", "Assets", "Help", "guia.html"));
+
+        // Los apartados que abre F1 desde cada pestaña, más los del índice.
+        var sections = new[] { "inicio", "explorador", "renombrar", "reglas", "series", "presets", "subtitulos", "crear", "deshacer", "ajustes", "faq" };
+        foreach (var lang in new[] { "es", "en", "pt" })
+        {
+            Assert.Contains($"<article lang=\"{lang}\">", html);
+            foreach (var section in sections)
+            {
+                Assert.Contains($"id=\"{lang}-{section}\"", html);
+                Assert.Contains($"href=\"#{lang}-{section}\"", html);
+            }
+        }
+        Assert.DoesNotContain("http://", html);
+        Assert.DoesNotContain("https://", html); // sin dependencias externas
+    }
+}

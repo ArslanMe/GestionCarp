@@ -28,6 +28,8 @@ internal static class Strings
         ["menu_exit"] = new[] { "_Salir", "E_xit", "_Sair" },
         ["menu_language"] = new[] { "_Idioma", "_Language", "_Idioma" },
         ["menu_help"] = new[] { "Ay_uda", "_Help", "Aj_uda" },
+        ["menu_guide"] = new[] { "_Guía de uso", "User _guide", "_Guia de uso" },
+        ["help_failed"] = new[] { "No se pudo abrir la guía: {0}", "Could not open the guide: {0}", "Não foi possível abrir o guia: {0}" },
         ["menu_check_updates"] = new[] { "Buscar _actualizaciones…", "Check for _updates…", "Procurar _atualizações…" },
         ["menu_check_startup"] = new[] { "Buscar actualizaciones al iniciar", "Check for updates at startup", "Procurar atualizações ao iniciar" },
         ["menu_github"] = new[] { "Ver el proyecto en GitHub", "View the project on GitHub", "Ver o projeto no GitHub" },

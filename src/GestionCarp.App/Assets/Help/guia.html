@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GestionCarp · Guía</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1f2937;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb;--accent-soft:#e8efff;--ok:#16a34a;--ok-soft:#eaf7ee;--warn:#b45309;--warn-soft:#fff6db;--err:#dc2626;--err-soft:#fde8e8;--code:#f1f3f6}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1420;--card:#171d2b;--fg:#e5e7eb;--muted:#9ca3af;--line:#2a3243;--accent:#60a5fa;--accent-soft:#1c2a48;--ok:#4ade80;--ok-soft:#173226;--warn:#fbbf24;--warn-soft:#3a2f12;--err:#f87171;--err-soft:#3b1d1d;--code:#222a3a}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 "Segoe UI",system-ui,-apple-system,sans-serif}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1180px;margin:0 auto;gap:28px;padding:24px 20px 60px}
+nav{position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.brand b{font-size:19px}
+.langs{display:flex;gap:6px;margin:0 0 16px}
+.langs a{padding:3px 10px;border:1px solid var(--line);border-radius:999px;color:var(--fg);text-decoration:none;font-size:13px}
+.langs a.on{background:var(--accent);border-color:var(--accent);color:#fff}
+nav ol{list-style:none;margin:0;padding:0}
+nav li a{display:block;padding:5px 10px;border-radius:8px;color:var(--fg);text-decoration:none}
+nav li a:hover{background:var(--accent-soft)}
+main section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:18px}
+h1{font-size:26px;margin:0 0 6px}
+h2{font-size:21px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+h3{font-size:16px;margin:18px 0 6px}
+p{margin:8px 0}
+.lead{color:var(--muted);margin-bottom:18px}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:10px 0}
+ol.steps>li{counter-increment:s;position:relative;padding:4px 0 6px 38px}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:4px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:600;font-size:13px;display:grid;place-items:center}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600}
+td:first-child code{white-space:nowrap}
+code,kbd{font-family:"Cascadia Mono",Consolas,monospace;font-size:13px;background:var(--code);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+kbd{border:1px solid var(--line)}
+pre{background:var(--code);border-radius:10px;padding:12px 14px;overflow:auto;font:13px/1.5 "Cascadia Mono",Consolas,monospace;margin:10px 0}
+.ex{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:6px 0}
+.ex code{display:block;padding:6px 9px}
+.ex span{color:var(--muted)}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:9px 13px;border-radius:0 10px 10px 0;margin:12px 0}
+.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:13px;font-weight:600}
+.ok{background:var(--ok-soft);color:var(--ok)}.wa{background:var(--warn-soft);color:var(--warn)}.er{background:var(--err-soft);color:var(--err)}.un{background:var(--code);color:var(--muted)}
+.ui{font-weight:600;white-space:nowrap}
+footer{color:var(--muted);font-size:13px;text-align:center;margin-top:10px}
+article{display:none}article.on{display:block}
+@media (max-width:820px){.layout{grid-template-columns:1fr}nav{position:static;max-height:none}.ex{grid-template-columns:1fr}.ex span{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ============================== ESPAÑOL ============================== -->
+<article lang="es">
+<div class="layout">
+<nav>
+  <div class="brand"><svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="14" fill="#2563eb"/><rect x="11" y="16" width="20" height="9" rx="3" fill="#f59e0b"/><rect x="11" y="20" width="42" height="30" rx="5" fill="#fcc434"/><rect x="35" y="35" width="21" height="15" rx="4" fill="#fff"/><text x="45.5" y="46.5" font-size="10" font-weight="700" text-anchor="middle" fill="#1d4ed8" font-family="Segoe UI,Arial">01</text></svg><b>GestionCarp</b></div>
+  <div class="langs"><a href="?lang=es" class="on">Español</a><a href="?lang=en">English</a><a href="?lang=pt">Português</a></div>
+  <ol>
+    <li><a href="#es-inicio">Primeros pasos</a></li>
+    <li><a href="#es-explorador">📁 Explorador y exportar</a></li>
+    <li><a href="#es-renombrar">✏️ Renombrar</a></li>
+    <li><a href="#es-reglas">Las reglas, una a una</a></li>
+    <li><a href="#es-series">Plantilla de series</a></li>
+    <li><a href="#es-presets">Presets</a></li>
+    <li><a href="#es-subtitulos">💬 Subtítulos</a></li>
+    <li><a href="#es-crear">🧱 Crear carpetas</a></li>
+    <li><a href="#es-deshacer">↶ Deshacer y seguridad</a></li>
+    <li><a href="#es-ajustes">Idioma y actualizaciones</a></li>
+    <li><a href="#es-faq">Preguntas frecuentes</a></li>
+  </ol>
+</nav>
+<main>
+<section id="es-inicio">
+  <h1>Guía de GestionCarp</h1>
+  <p class="lead">Explora carpetas, comparte su estructura, renombra archivos por lotes y deja los subtítulos listos para el reproductor.</p>
+  <p>La aplicación tiene cuatro pestañas:</p>
+  <table>
+    <tr><th>Pestaña</th><th>Para qué sirve</th></tr>
+    <tr><td class="ui">📁 Explorador y exportar</td><td>Ver el árbol de una carpeta y copiarlo o guardarlo (texto, Markdown, JSON, HTML, Excel, Word).</td></tr>
+    <tr><td class="ui">✏️ Renombrar</td><td>Cambiar el nombre de muchos archivos a la vez con reglas: numerar, plantilla de series, limpiar, reemplazar…</td></tr>
+    <tr><td class="ui">💬 Subtítulos</td><td>Poner a cada subtítulo el nombre de su capítulo para que el reproductor lo cargue solo.</td></tr>
+    <tr><td class="ui">🧱 Crear carpetas</td><td>Crear de golpe una estructura de carpetas escrita o pegada como texto.</td></tr>
+  </table>
+  <div class="tip">Puedes <b>arrastrar</b> carpetas y archivos desde el Explorador de Windows a cualquier pestaña. Pulsa <kbd>F1</kbd> para abrir esta guía en el apartado de la pestaña en la que estés.</div>
+  <div class="tip">Nada se cambia en el disco sin que veas antes una <b>vista previa</b> y lo confirmes, y todo se puede <b>deshacer</b>.</div>
+</section>
+
+<section id="es-explorador">
+  <h2>📁 Explorador y exportar</h2>
+  <ol class="steps">
+    <li>Pulsa <span class="ui">Examinar…</span> o arrastra una carpeta a la ventana.</li>
+    <li>Ajusta las opciones si lo necesitas:
+      <ul>
+        <li><span class="ui">Profundidad</span>: cuántos niveles de subcarpetas analizar (<code>0</code> = todos).</li>
+        <li><span class="ui">Mostrar archivos</span>: desmárcalo para ver solo carpetas (los tamaños siguen contando los archivos).</li>
+        <li><span class="ui">Excluir</span>: nombres o patrones a ignorar, separados por <code>;</code> — por ejemplo <code>.git; node_modules</code>.</li>
+        <li><span class="ui">Solo archivos</span>: muestra solo ciertos tipos, por ejemplo <code>*.mkv; *.mp4</code>.</li>
+      </ul></li>
+    <li>Pulsa <span class="ui">Analizar</span>. Verás el árbol con el tamaño y el número de archivos de cada carpeta.</li>
+    <li>En el panel derecho elige el <span class="ui">Formato</span> y pulsa <span class="ui">Copiar al portapapeles</span> o <span class="ui">Guardar como…</span>.</li>
+  </ol>
+  <table>
+    <tr><th>Formato</th><th>Ideal para</th></tr>
+    <tr><td>Texto (árbol)</td><td>Pegar en un chat, correo o documento. Se ve así:<pre>Mi Serie/
+├── Temporada 1/
+│   └── Cap01.mkv
+└── Temporada 2/</pre></td></tr>
+    <tr><td>Markdown</td><td>GitHub, Notion, Obsidian, foros.</td></tr>
+    <tr><td>JSON</td><td>Otros programas o scripts.</td></tr>
+    <tr><td>HTML</td><td>Una página para abrir en el navegador, con carpetas que se pliegan.</td></tr>
+    <tr><td>Excel (.xlsx)</td><td>Una fila por elemento, con tamaño, fecha y filtros.</td></tr>
+    <tr><td>Word (.docx)</td><td>Un documento con el árbol, listo para imprimir.</td></tr>
+  </table>
+  <p>Opciones de exportación: <span class="ui">Niveles</span>, <span class="ui">Archivos</span>, <span class="ui">Tamaños</span>, <span class="ui">Fechas</span> y <span class="ui">Totales por carpeta</span>. Excel y Word solo se pueden guardar (no copiar).</p>
+  <div class="tip">¿Solo te interesa una parte? <b>Selecciona una subcarpeta en el árbol</b>: se exporta solo esa.</div>
+  <h3>Botones bajo el árbol</h3>
+  <ul>
+    <li><span class="ui">Renombrar archivos de esta carpeta</span>: los envía a la pestaña Renombrar.</li>
+    <li><span class="ui">Emparejar subtítulos aquí</span>: abre la pestaña Subtítulos con esa carpeta.</li>
+    <li><span class="ui">Usar como plantilla</span>: copia sus carpetas (sin archivos) a Crear carpetas, para repetir la estructura en otro sitio.</li>
+    <li><span class="ui">Abrir en el Explorador</span>: muestra el elemento en el Explorador de Windows.</li>
+  </ul>
+</section>
+
+<section id="es-renombrar">
+  <h2>✏️ Renombrar</h2>
+  <ol class="steps">
+    <li><b>Añade los archivos</b>: <span class="ui">Añadir archivos…</span>, <span class="ui">Añadir carpeta…</span> o arrástralos a la lista. Al añadir carpetas puedes <span class="ui">Incluir subcarpetas</span>, <span class="ui">Añadir también las carpetas</span> (para renombrar las propias carpetas) y usar un <span class="ui">Filtro</span> como <code>*.mkv</code>.</li>
+    <li><b>Ordena la lista</b>. El orden decide la numeración. <span class="ui">Ordenar A→Z</span> usa orden natural (<code>Cap2</code> antes que <code>Cap10</code>); con <span class="ui">▲ ▼</span> mueves los seleccionados.</li>
+    <li><b>Añade reglas</b> con <span class="ui">➕ Añadir regla</span> y configúralas abajo. Se aplican en orden, de arriba abajo; desmarca una para desactivarla sin borrarla.</li>
+    <li><b>Revisa la vista previa</b>. Cada fila muestra el nombre actual y el nuevo:
+      <p><span class="chip ok">✔ cambia</span> <span class="chip wa">⚠ aviso</span> <span class="chip er">✖ error: no se renombra</span> <span class="chip un">= sin cambios</span></p>
+      Pasa el ratón por una fila para ver el motivo de un aviso o un error.</li>
+    <li>Pulsa <span class="ui">Renombrar</span> y confirma.</li>
+  </ol>
+  <h3>Subtítulos que acompañan al vídeo</h3>
+  <p>Con la casilla <span class="ui">Renombrar también los subtítulos de cada vídeo</span> activada, los subtítulos de la misma carpeta que se llaman igual que el vídeo se renombran con él, conservando el idioma, aunque no estén en la lista:</p>
+  <div class="ex"><code>serie.e1.mkv · serie.e1.es.srt · serie.e1.en.forced.ass</code><span>→</span><code>Cap01.mkv · Cap01.es.srt · Cap01.en.forced.ass</code></div>
+  <p>La columna <span class="ui">Subtítulos</span> indica cuántos acompañan a cada vídeo.</p>
+  <div class="tip">Teclas: <kbd>Supr</kbd> quita de la lista los seleccionados (no borra archivos).</div>
+</section>
+
+<section id="es-reglas">
+  <h2>Las reglas, una a una</h2>
+  <table>
+    <tr><th>Regla</th><th>Qué hace</th><th>Ejemplo</th></tr>
+    <tr><td class="ui">Numerar</td><td>Pone un número: sustituyendo el nombre, al principio o al final. Elige texto antes/después, inicio, incremento y cifras. <i>Reiniciar en cada carpeta</i> sirve para temporadas.</td><td><code>x.mkv</code> → <code>Mi Serie - Cap01.mkv</code></td></tr>
+    <tr><td class="ui">Plantilla de series</td><td>Construye el nombre con temporada, episodio y título detectados. <a href="#es-series">Ver detalle</a>.</td><td><code>show.s01e05.mkv</code> → <code>Show - T01E05.mkv</code></td></tr>
+    <tr><td class="ui">Limpiar nombres</td><td>Quita <code>[grupos]</code>, etiquetas de calidad (<code>1080p</code>, <code>WEB-DL</code>, <code>x264</code>…), el grupo final <code>-XYZ</code> y convierte puntos y <code>_</code> en espacios.</td><td><code>[G] Mi.Serie.S01E02.1080p-XYZ</code> → <code>Mi Serie S01E02</code></td></tr>
+    <tr><td class="ui">Reemplazar</td><td>Busca un texto y lo cambia por otro. Opciones: todas las veces, distinguir mayúsculas, expresión regular (con <code>$1</code>, <code>$2</code>…).</td><td><code>Mi.Serie</code> → <code>Mi Serie</code></td></tr>
+    <tr><td class="ui">Insertar</td><td>Añade texto al principio, al final o tras N caracteres.</td><td><code>a.mkv</code> → <code>[HD] a.mkv</code></td></tr>
+    <tr><td class="ui">Eliminar</td><td>Quita los primeros o últimos N caracteres, un tramo, o todo lo que haya entre dos delimitadores.</td><td><code>Serie [1080p]</code> → <code>Serie</code></td></tr>
+    <tr><td class="ui">Mayúsculas</td><td>Tipo Título, Tipo oración, minúsculas o MAYÚSCULAS.</td><td><code>mI sERIE</code> → <code>Mi Serie</code></td></tr>
+  </table>
+  <p>Casi todas las reglas tienen <span class="ui">Aplicar a</span>: solo el nombre (lo normal), solo la extensión o ambos. Por ejemplo, reemplazar <code>MKV</code> por <code>mkv</code> aplicado a la extensión.</p>
+  <div class="tip">Combina reglas: primero <b>Limpiar nombres</b>, luego <b>Plantilla de series</b> y, si quieres, <b>Mayúsculas → Tipo Título</b>.</div>
+</section>
+
+<section id="es-series">
+  <h2>Plantilla de series</h2>
+  <p>Escribe la plantilla (o elige un ejemplo del desplegable) con estos marcadores:</p>
+  <table>
+    <tr><th>Marcador</th><th>Se sustituye por</th></tr>
+    <tr><td><code>{serie}</code></td><td>El nombre de la serie: el que escribas en <span class="ui">Serie</span> o, si lo dejas vacío, lo que va antes del episodio en el nombre o la carpeta de la serie.</td></tr>
+    <tr><td><code>{temp}</code></td><td>La temporada.</td></tr>
+    <tr><td><code>{ep}</code></td><td>El número de episodio.</td></tr>
+    <tr><td><code>{titulo}</code></td><td>El título del episodio (lo que va después del número, ya limpio).</td></tr>
+    <tr><td><code>{n}</code></td><td>La posición en la lista (1, 2, 3…).</td></tr>
+    <tr><td><code>{nombre}</code></td><td>El nombre actual completo.</td></tr>
+  </table>
+  <p>Añade <code>:00</code> para rellenar con ceros: <code>{ep:00}</code> → <code>05</code>, <code>{ep:000}</code> → <code>005</code>.</p>
+  <h3>Qué se detecta</h3>
+  <p>Episodios escritos como <code>S01E05</code>, <code>1x05</code>, <code>Cap 5</code>, <code>Capítulo 05</code>, <code>Episodio 5</code>, <code>E05</code> o <code>Serie - 05</code>. Si la temporada no está en el nombre, se toma de la carpeta (<code>Temporada 2</code>, <code>Season 02</code>, <code>S2</code>) o del campo <span class="ui">Temporada</span>.</p>
+  <div class="ex"><code>breaking.bad.s01e05.gray.matter.720p.mkv</code><span>→</span><code>breaking bad - T01E05 - gray matter.mkv</code></div>
+  <div class="ex"><code>Mi Serie/Temporada 3/Cap 4.mkv</code><span>→</span><code>Mi Serie - T03E04.mkv</code></div>
+  <div class="tip warn">Si en un nombre no se encuentra el episodio, esa fila sale en rojo y no se toca.</div>
+</section>
+
+<section id="es-presets">
+  <h2>Presets</h2>
+  <p>Un preset es una combinación de reglas guardada con un nombre, para reutilizarla con un clic.</p>
+  <ul>
+    <li><b>Usar</b>: elige uno en el desplegable <span class="ui">Preset</span> y pulsa <span class="ui">Cargar</span> (sustituye las reglas actuales).</li>
+    <li><b>Guardar</b>: prepara tus reglas y en <span class="ui">⋯</span> elige <span class="ui">Guardar las reglas actuales como preset…</span>.</li>
+    <li><b>Compartir</b>: <span class="ui">⋯ → Exportar preset a un archivo…</span> crea un <code>.json</code> que otra persona puede abrir con <span class="ui">Importar preset desde un archivo…</span>.</li>
+  </ul>
+  <p>Vienen tres de ejemplo: <i>Serie: limpiar + T01E01</i>, <i>Limpiar nombres descargados</i> y <i>Numerar capítulos</i>.</p>
+</section>
+
+<section id="es-subtitulos">
+  <h2>💬 Subtítulos</h2>
+  <p>Los reproductores (VLC, MPC-HC, PotPlayer, Plex, Kodi…) cargan solos el subtítulo que se llama igual que el vídeo: <code>Cap01.mkv</code> → <code>Cap01.srt</code> o <code>Cap01.es.srt</code>. Esta pestaña lo consigue aunque ahora tengan nombres distintos.</p>
+  <ol class="steps">
+    <li>Elige (o arrastra) la carpeta de la serie y pulsa <span class="ui">Analizar</span>.</li>
+    <li>Elige cómo <span class="ui">Emparejar</span>: <b>por número de episodio</b> (recomendado) o <b>por orden alfabético</b> dentro de cada carpeta (útil si los nombres no llevan número; cada idioma se empareja por separado).</li>
+    <li>Opciones: <span class="ui">Conservar idioma</span> (<code>.es</code>, <code>.en</code>, <code>.forced</code>…), <span class="ui">Idioma si no tiene</span> (por ejemplo <code>es</code> → <code>Cap01.es.srt</code>) y <span class="ui">Sacar de «Subs»</span> para dejarlos junto al vídeo.</li>
+    <li>Revisa la tabla; desmarca los que no quieras tocar.</li>
+    <li>Pulsa <span class="ui">Renombrar subtítulos</span>.</li>
+  </ol>
+  <div class="ex"><code>Subs/serie.s01e01.spanish.srt</code><span>→</span><code>Mi Serie - Cap01.spanish.srt</code></div>
+</section>
+
+<section id="es-crear">
+  <h2>🧱 Crear carpetas</h2>
+  <p>Crea una estructura de carpetas completa a partir de texto. Acepta el árbol que exporta GestionCarp, listas con sangría (espacios o tabuladores), listas de Markdown y JSON.</p>
+  <ol class="steps">
+    <li>Escribe o pega la estructura a la izquierda (o pulsa <span class="ui">Ejemplo</span>). Las líneas que terminan en <code>/</code> son carpetas.</li>
+    <li>Elige la carpeta de destino en <span class="ui">Crear en</span>.</li>
+    <li>Revisa la vista previa: <span class="chip ok">＋ se crea</span> <span class="chip un">= ya existe</span> <span class="chip er">✖ nombre no válido</span>.</li>
+    <li>Pulsa <span class="ui">Crear</span>.</li>
+  </ol>
+  <pre>Mi Serie/
+├── Temporada 1/
+│   └── Subs/
+├── Temporada 2/
+└── Extras/</pre>
+  <p>Los archivos (líneas con extensión, como <code>notas.txt</code>) solo se crean, vacíos, si marcas <span class="ui">Crear también los archivos</span>.</p>
+  <div class="tip">Para copiar la estructura de una carpeta que ya tienes: en el Explorador, analízala y pulsa <span class="ui">Usar como plantilla</span>.</div>
+</section>
+
+<section id="es-deshacer">
+  <h2>↶ Deshacer y seguridad</h2>
+  <ul>
+    <li>Antes de tocar nada se comprueban nombres no válidos en Windows, duplicados, archivos que ya existen y rutas demasiado largas.</li>
+    <li>Si algo falla a mitad de un renombrado, se revierte todo: no quedan cambios a medias.</li>
+    <li>El botón <span class="ui">↶ Deshacer</span> revierte la última operación (renombrar, subtítulos o crear carpetas). Puedes pulsarlo varias veces; recuerda las últimas 50, <b>incluso tras cerrar la aplicación</b>.</li>
+    <li>Al deshacer una creación de carpetas solo se borra lo que siga vacío: si ya metiste algo dentro, se conserva.</li>
+  </ul>
+</section>
+
+<section id="es-ajustes">
+  <h2>Idioma y actualizaciones</h2>
+  <ul>
+    <li><span class="ui">Idioma</span>: Español, English o Português. El cambio es inmediato y se recuerda.</li>
+    <li><span class="ui">Ayuda → Buscar actualizaciones…</span>: compara tu versión con la última publicada; si hay una nueva, la descarga, sustituye el programa y lo reinicia. Con <span class="ui">Buscar actualizaciones al iniciar</span> lo comprueba sola (si no hay internet, no avisa).</li>
+    <li><span class="ui">Ayuda → Acerca de</span>: versión instalada, autor y licencia.</li>
+    <li>La ventana recuerda su tamaño y posición.</li>
+  </ul>
+</section>
+
+<section id="es-faq">
+  <h2>Preguntas frecuentes</h2>
+  <h3>¿Por qué una fila sale en rojo?</h3>
+  <p>Ese elemento no se renombrará. Pasa el ratón por encima para ver el motivo: nombre duplicado, carácter no permitido (<code>\ / : * ? " &lt; &gt; |</code>), ya existe otro archivo con ese nombre…</p>
+  <h3>Los números no salen en el orden que quiero</h3>
+  <p>La numeración sigue el orden de la lista. Pulsa <span class="ui">Ordenar A→Z</span> o mueve las filas con <span class="ui">▲ ▼</span>.</p>
+  <h3>El reproductor no carga el subtítulo</h3>
+  <p>El subtítulo debe estar en la misma carpeta y llamarse exactamente igual que el vídeo (puede añadir el idioma: <code>.es.srt</code>). Usa la pestaña Subtítulos.</p>
+  <h3>¿Necesita internet?</h3>
+  <p>No. Solo la búsqueda de actualizaciones usa internet. Esta guía también funciona sin conexión.</p>
+  <h3>¿Dónde guarda sus datos?</h3>
+  <p>Ajustes, presets e historial para deshacer están en <code>%LocalAppData%\GestionCarp</code>.</p>
+  <h3>Windows dice «Windows protegió su PC»</h3>
+  <p>Ocurre con programas que no están firmados digitalmente. Pulsa <span class="ui">Más información → Ejecutar de todas formas</span>.</p>
+</section>
+<footer>GestionCarp · © 2026 Raudel Camacho · Licencia MIT</footer>
+</main>
+</div>
+</article>
+
+<!-- ============================== ENGLISH ============================== -->
+<article lang="en">
+<div class="layout">
+<nav>
+  <div class="brand"><svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="14" fill="#2563eb"/><rect x="11" y="16" width="20" height="9" rx="3" fill="#f59e0b"/><rect x="11" y="20" width="42" height="30" rx="5" fill="#fcc434"/><rect x="35" y="35" width="21" height="15" rx="4" fill="#fff"/><text x="45.5" y="46.5" font-size="10" font-weight="700" text-anchor="middle" fill="#1d4ed8" font-family="Segoe UI,Arial">01</text></svg><b>GestionCarp</b></div>
+  <div class="langs"><a href="?lang=es">Español</a><a href="?lang=en" class="on">English</a><a href="?lang=pt">Português</a></div>
+  <ol>
+    <li><a href="#en-inicio">Getting started</a></li>
+    <li><a href="#en-explorador">📁 Explorer and export</a></li>
+    <li><a href="#en-renombrar">✏️ Rename</a></li>
+    <li><a href="#en-reglas">The rules, one by one</a></li>
+    <li><a href="#en-series">Series template</a></li>
+    <li><a href="#en-presets">Presets</a></li>
+    <li><a href="#en-subtitulos">💬 Subtitles</a></li>
+    <li><a href="#en-crear">🧱 Create folders</a></li>
+    <li><a href="#en-deshacer">↶ Undo and safety</a></li>
+    <li><a href="#en-ajustes">Language and updates</a></li>
+    <li><a href="#en-faq">FAQ</a></li>
+  </ol>
+</nav>
+<main>
+<section id="en-inicio">
+  <h1>GestionCarp guide</h1>
+  <p class="lead">Explore folders, share their structure, batch-rename files and get subtitles ready for your player.</p>
+  <p>The app has four tabs:</p>
+  <table>
+    <tr><th>Tab</th><th>What it is for</th></tr>
+    <tr><td class="ui">📁 Explorer and export</td><td>See a folder's tree and copy or save it (text, Markdown, JSON, HTML, Excel, Word).</td></tr>
+    <tr><td class="ui">✏️ Rename</td><td>Rename many files at once with rules: number, series template, clean up, replace…</td></tr>
+    <tr><td class="ui">💬 Subtitles</td><td>Give each subtitle the name of its episode so the player loads it automatically.</td></tr>
+    <tr><td class="ui">🧱 Create folders</td><td>Create a whole folder structure typed or pasted as text.</td></tr>
+  </table>
+  <div class="tip">You can <b>drag</b> folders and files from Windows Explorer onto any tab. Press <kbd>F1</kbd> to open this guide at the section for the tab you are on.</div>
+  <div class="tip">Nothing changes on disk until you have seen a <b>preview</b> and confirmed it, and everything can be <b>undone</b>.</div>
+</section>
+
+<section id="en-explorador">
+  <h2>📁 Explorer and export</h2>
+  <ol class="steps">
+    <li>Press <span class="ui">Browse…</span> or drag a folder onto the window.</li>
+    <li>Adjust the options if needed:
+      <ul>
+        <li><span class="ui">Depth</span>: how many subfolder levels to scan (<code>0</code> = all).</li>
+        <li><span class="ui">Show files</span>: uncheck it to see folders only (sizes still count the files).</li>
+        <li><span class="ui">Exclude</span>: names or patterns to ignore, separated by <code>;</code> — e.g. <code>.git; node_modules</code>.</li>
+        <li><span class="ui">Only files</span>: show only some types, e.g. <code>*.mkv; *.mp4</code>.</li>
+      </ul></li>
+    <li>Press <span class="ui">Scan</span>. You will see the tree with each folder's size and file count.</li>
+    <li>On the right, choose the <span class="ui">Format</span> and press <span class="ui">Copy to clipboard</span> or <span class="ui">Save as…</span>.</li>
+  </ol>
+  <table>
+    <tr><th>Format</th><th>Best for</th></tr>
+    <tr><td>Text (tree)</td><td>Pasting into a chat, email or document. It looks like this:<pre>My Show/
+├── Season 1/
+│   └── Ep01.mkv
+└── Season 2/</pre></td></tr>
+    <tr><td>Markdown</td><td>GitHub, Notion, Obsidian, forums.</td></tr>
+    <tr><td>JSON</td><td>Other programs or scripts.</td></tr>
+    <tr><td>HTML</td><td>A page to open in the browser, with collapsible folders.</td></tr>
+    <tr><td>Excel (.xlsx)</td><td>One row per item, with size, date and filters.</td></tr>
+    <tr><td>Word (.docx)</td><td>A document with the tree, ready to print.</td></tr>
+  </table>
+  <p>Export options: <span class="ui">Levels</span>, <span class="ui">Files</span>, <span class="ui">Sizes</span>, <span class="ui">Dates</span> and <span class="ui">Totals per folder</span>. Excel and Word can only be saved (not copied).</p>
+  <div class="tip">Only need part of it? <b>Select a subfolder in the tree</b>: only that one is exported.</div>
+  <h3>Buttons under the tree</h3>
+  <ul>
+    <li><span class="ui">Rename files in this folder</span>: sends them to the Rename tab.</li>
+    <li><span class="ui">Match subtitles here</span>: opens the Subtitles tab with that folder.</li>
+    <li><span class="ui">Use as template</span>: copies its folders (no files) to Create folders, to repeat the structure elsewhere.</li>
+    <li><span class="ui">Open in Explorer</span>: shows the item in Windows Explorer.</li>
+  </ul>
+</section>
+
+<section id="en-renombrar">
+  <h2>✏️ Rename</h2>
+  <ol class="steps">
+    <li><b>Add the files</b>: <span class="ui">Add files…</span>, <span class="ui">Add folder…</span> or drag them into the list. When adding folders you can <span class="ui">Include subfolders</span>, <span class="ui">Also add the folders</span> (to rename the folders themselves) and use a <span class="ui">Filter</span> such as <code>*.mkv</code>.</li>
+    <li><b>Sort the list</b>. The order decides the numbering. <span class="ui">Sort A→Z</span> uses natural order (<code>Ep2</code> before <code>Ep10</code>); <span class="ui">▲ ▼</span> move the selected rows.</li>
+    <li><b>Add rules</b> with <span class="ui">➕ Add rule</span> and configure them below. They apply in order, top to bottom; uncheck one to disable it without deleting it.</li>
+    <li><b>Check the preview</b>. Each row shows the current and the new name:
+      <p><span class="chip ok">✔ changes</span> <span class="chip wa">⚠ warning</span> <span class="chip er">✖ error: not renamed</span> <span class="chip un">= no change</span></p>
+      Hover over a row to see the reason for a warning or an error.</li>
+    <li>Press <span class="ui">Rename</span> and confirm.</li>
+  </ol>
+  <h3>Subtitles that follow the video</h3>
+  <p>With <span class="ui">Also rename each video's subtitles</span> checked, subtitles in the same folder named like the video are renamed with it, keeping the language, even if they are not in the list:</p>
+  <div class="ex"><code>show.e1.mkv · show.e1.en.srt · show.e1.es.forced.ass</code><span>→</span><code>Ep01.mkv · Ep01.en.srt · Ep01.es.forced.ass</code></div>
+  <p>The <span class="ui">Subtitles</span> column shows how many go with each video.</p>
+  <div class="tip">Keys: <kbd>Del</kbd> removes the selected rows from the list (it does not delete files).</div>
+</section>
+
+<section id="en-reglas">
+  <h2>The rules, one by one</h2>
+  <table>
+    <tr><th>Rule</th><th>What it does</th><th>Example</th></tr>
+    <tr><td class="ui">Number</td><td>Adds a number: replacing the name, at the start or at the end. Choose text before/after, start, step and digits. <i>Restart in each folder</i> is handy for seasons.</td><td><code>x.mkv</code> → <code>My Show - Ep01.mkv</code></td></tr>
+    <tr><td class="ui">Series template</td><td>Builds the name from the detected season, episode and title. <a href="#en-series">Details</a>.</td><td><code>show.s01e05.mkv</code> → <code>Show - S01E05.mkv</code></td></tr>
+    <tr><td class="ui">Clean up names</td><td>Removes <code>[groups]</code>, quality tags (<code>1080p</code>, <code>WEB-DL</code>, <code>x264</code>…), the trailing group <code>-XYZ</code>, and turns dots and <code>_</code> into spaces.</td><td><code>[G] My.Show.S01E02.1080p-XYZ</code> → <code>My Show S01E02</code></td></tr>
+    <tr><td class="ui">Replace</td><td>Finds some text and replaces it. Options: all occurrences, match case, regular expression (with <code>$1</code>, <code>$2</code>…).</td><td><code>My.Show</code> → <code>My Show</code></td></tr>
+    <tr><td class="ui">Insert</td><td>Adds text at the start, at the end or after N characters.</td><td><code>a.mkv</code> → <code>[HD] a.mkv</code></td></tr>
+    <tr><td class="ui">Remove</td><td>Removes the first or last N characters, a range, or everything between two delimiters.</td><td><code>Show [1080p]</code> → <code>Show</code></td></tr>
+    <tr><td class="ui">Letter case</td><td>Title Case, Sentence case, lowercase or UPPERCASE.</td><td><code>mY sHOW</code> → <code>My Show</code></td></tr>
+  </table>
+  <p>Most rules have <span class="ui">Apply to</span>: name only (the usual), extension only, or both. For example, replace <code>MKV</code> with <code>mkv</code> applied to the extension.</p>
+  <div class="tip">Combine rules: first <b>Clean up names</b>, then <b>Series template</b> and, if you like, <b>Letter case → Title Case</b>.</div>
+</section>
+
+<section id="en-series">
+  <h2>Series template</h2>
+  <p>Type the template (or pick an example from the list) with these tokens:</p>
+  <table>
+    <tr><th>Token</th><th>Replaced with</th></tr>
+    <tr><td><code>{series}</code></td><td>The series name: the one you type in <span class="ui">Series</span> or, if empty, what comes before the episode in the name, or the series folder.</td></tr>
+    <tr><td><code>{season}</code></td><td>The season.</td></tr>
+    <tr><td><code>{episode}</code></td><td>The episode number.</td></tr>
+    <tr><td><code>{title}</code></td><td>The episode title (what comes after the number, cleaned up).</td></tr>
+    <tr><td><code>{n}</code></td><td>The position in the list (1, 2, 3…).</td></tr>
+    <tr><td><code>{name}</code></td><td>The full current name.</td></tr>
+  </table>
+  <p>Add <code>:00</code> to pad with zeros: <code>{episode:00}</code> → <code>05</code>, <code>{episode:000}</code> → <code>005</code>. The Spanish tokens (<code>{serie}</code>, <code>{temp}</code>, <code>{ep}</code>, <code>{titulo}</code>) work too.</p>
+  <h3>What is detected</h3>
+  <p>Episodes written as <code>S01E05</code>, <code>1x05</code>, <code>Ep 5</code>, <code>Episode 05</code>, <code>E05</code> or <code>Show - 05</code>. If the season is not in the name, it is taken from the folder (<code>Season 02</code>, <code>Temporada 2</code>, <code>S2</code>) or from the <span class="ui">Season</span> field.</p>
+  <div class="ex"><code>breaking.bad.s01e05.gray.matter.720p.mkv</code><span>→</span><code>breaking bad - S01E05 - gray matter.mkv</code></div>
+  <div class="ex"><code>My Show/Season 3/Episode 4.mkv</code><span>→</span><code>My Show - S03E04.mkv</code></div>
+  <div class="tip warn">If no episode is found in a name, that row turns red and is left untouched.</div>
+</section>
+
+<section id="en-presets">
+  <h2>Presets</h2>
+  <p>A preset is a set of rules saved under a name, to reuse it with one click.</p>
+  <ul>
+    <li><b>Use</b>: pick one in the <span class="ui">Preset</span> list and press <span class="ui">Load</span> (it replaces the current rules).</li>
+    <li><b>Save</b>: set up your rules and in <span class="ui">⋯</span> choose <span class="ui">Save the current rules as a preset…</span>.</li>
+    <li><b>Share</b>: <span class="ui">⋯ → Export preset to a file…</span> creates a <code>.json</code> that someone else can open with <span class="ui">Import preset from a file…</span>.</li>
+  </ul>
+  <p>Three examples are included: <i>Series: clean up + S01E01</i>, <i>Clean up downloaded names</i> and <i>Number episodes</i>.</p>
+</section>
+
+<section id="en-subtitulos">
+  <h2>💬 Subtitles</h2>
+  <p>Players (VLC, MPC-HC, PotPlayer, Plex, Kodi…) automatically load the subtitle named like the video: <code>Ep01.mkv</code> → <code>Ep01.srt</code> or <code>Ep01.en.srt</code>. This tab makes that happen even if the names are different now.</p>
+  <ol class="steps">
+    <li>Choose (or drag) the series folder and press <span class="ui">Scan</span>.</li>
+    <li>Choose how to <span class="ui">Match</span>: <b>by episode number</b> (recommended) or <b>by alphabetical order</b> in each folder (useful when names have no number; each language is matched separately).</li>
+    <li>Options: <span class="ui">Keep language</span> (<code>.en</code>, <code>.es</code>, <code>.forced</code>…), <span class="ui">Language if none</span> (e.g. <code>en</code> → <code>Ep01.en.srt</code>) and <span class="ui">Move out of “Subs”</span> to place them next to the video.</li>
+    <li>Check the table; uncheck any you want to leave alone.</li>
+    <li>Press <span class="ui">Rename subtitles</span>.</li>
+  </ol>
+  <div class="ex"><code>Subs/show.s01e01.english.srt</code><span>→</span><code>My Show - Ep01.english.srt</code></div>
+</section>
+
+<section id="en-crear">
+  <h2>🧱 Create folders</h2>
+  <p>Creates a whole folder structure from text. It accepts the tree GestionCarp exports, indented lists (spaces or tabs), Markdown lists and JSON.</p>
+  <ol class="steps">
+    <li>Type or paste the structure on the left (or press <span class="ui">Example</span>). Lines ending in <code>/</code> are folders.</li>
+    <li>Choose the destination folder in <span class="ui">Create in</span>.</li>
+    <li>Check the preview: <span class="chip ok">＋ created</span> <span class="chip un">= already exists</span> <span class="chip er">✖ invalid name</span>.</li>
+    <li>Press <span class="ui">Create</span>.</li>
+  </ol>
+  <pre>My Show/
+├── Season 1/
+│   └── Subs/
+├── Season 2/
+└── Extras/</pre>
+  <p>Files (lines with an extension, such as <code>notes.txt</code>) are only created, empty, if you check <span class="ui">Also create the files</span>.</p>
+  <div class="tip">To copy the structure of a folder you already have: scan it in the Explorer tab and press <span class="ui">Use as template</span>.</div>
+</section>
+
+<section id="en-deshacer">
+  <h2>↶ Undo and safety</h2>
+  <ul>
+    <li>Before touching anything, it checks for names Windows does not allow, duplicates, existing files and paths that are too long.</li>
+    <li>If something fails halfway through a rename, everything is rolled back: nothing is left half-done.</li>
+    <li><span class="ui">↶ Undo</span> reverts the last operation (rename, subtitles or create folders). You can press it several times; it remembers the last 50, <b>even after closing the app</b>.</li>
+    <li>Undoing a folder creation only deletes what is still empty: anything you have put inside is kept.</li>
+  </ul>
+</section>
+
+<section id="en-ajustes">
+  <h2>Language and updates</h2>
+  <ul>
+    <li><span class="ui">Language</span>: Español, English or Português. The change is immediate and remembered.</li>
+    <li><span class="ui">Help → Check for updates…</span>: compares your version with the latest published one; if there is a new one, it downloads it, replaces the program and restarts it. With <span class="ui">Check for updates at startup</span> it checks on its own (no message when offline).</li>
+    <li><span class="ui">Help → About</span>: installed version, author and license.</li>
+    <li>The window remembers its size and position.</li>
+  </ul>
+</section>
+
+<section id="en-faq">
+  <h2>FAQ</h2>
+  <h3>Why is a row red?</h3>
+  <p>That item will not be renamed. Hover over it to see why: duplicate name, forbidden character (<code>\ / : * ? " &lt; &gt; |</code>), another file already has that name…</p>
+  <h3>The numbers are not in the order I want</h3>
+  <p>Numbering follows the list order. Press <span class="ui">Sort A→Z</span> or move rows with <span class="ui">▲ ▼</span>.</p>
+  <h3>The player does not load the subtitle</h3>
+  <p>The subtitle must be in the same folder and have exactly the same name as the video (it may add the language: <code>.en.srt</code>). Use the Subtitles tab.</p>
+  <h3>Does it need the internet?</h3>
+  <p>No. Only the update check uses the internet. This guide works offline too.</p>
+  <h3>Where does it keep its data?</h3>
+  <p>Settings, presets and the undo history are in <code>%LocalAppData%\GestionCarp</code>.</p>
+  <h3>Windows says “Windows protected your PC”</h3>
+  <p>This happens with programs that are not digitally signed. Click <span class="ui">More info → Run anyway</span>.</p>
+</section>
+<footer>GestionCarp · © 2026 Raudel Camacho · MIT License</footer>
+</main>
+</div>
+</article>
+
+<!-- ============================== PORTUGUÊS ============================== -->
+<article lang="pt">
+<div class="layout">
+<nav>
+  <div class="brand"><svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="14" fill="#2563eb"/><rect x="11" y="16" width="20" height="9" rx="3" fill="#f59e0b"/><rect x="11" y="20" width="42" height="30" rx="5" fill="#fcc434"/><rect x="35" y="35" width="21" height="15" rx="4" fill="#fff"/><text x="45.5" y="46.5" font-size="10" font-weight="700" text-anchor="middle" fill="#1d4ed8" font-family="Segoe UI,Arial">01</text></svg><b>GestionCarp</b></div>
+  <div class="langs"><a href="?lang=es">Español</a><a href="?lang=en">English</a><a href="?lang=pt" class="on">Português</a></div>
+  <ol>
+    <li><a href="#pt-inicio">Primeiros passos</a></li>
+    <li><a href="#pt-explorador">📁 Explorador e exportar</a></li>
+    <li><a href="#pt-renombrar">✏️ Renomear</a></li>
+    <li><a href="#pt-reglas">As regras, uma a uma</a></li>
+    <li><a href="#pt-series">Modelo de séries</a></li>
+    <li><a href="#pt-presets">Presets</a></li>
+    <li><a href="#pt-subtitulos">💬 Legendas</a></li>
+    <li><a href="#pt-crear">🧱 Criar pastas</a></li>
+    <li><a href="#pt-deshacer">↶ Desfazer e segurança</a></li>
+    <li><a href="#pt-ajustes">Idioma e atualizações</a></li>
+    <li><a href="#pt-faq">Perguntas frequentes</a></li>
+  </ol>
+</nav>
+<main>
+<section id="pt-inicio">
+  <h1>Guia do GestionCarp</h1>
+  <p class="lead">Explore pastas, compartilhe sua estrutura, renomeie arquivos em lote e deixe as legendas prontas para o player.</p>
+  <p>O aplicativo tem quatro abas:</p>
+  <table>
+    <tr><th>Aba</th><th>Para que serve</th></tr>
+    <tr><td class="ui">📁 Explorador e exportar</td><td>Ver a árvore de uma pasta e copiá-la ou salvá-la (texto, Markdown, JSON, HTML, Excel, Word).</td></tr>
+    <tr><td class="ui">✏️ Renomear</td><td>Renomear muitos arquivos de uma vez com regras: numerar, modelo de séries, limpar, substituir…</td></tr>
+    <tr><td class="ui">💬 Legendas</td><td>Dar a cada legenda o nome do seu episódio para o player carregá-la sozinho.</td></tr>
+    <tr><td class="ui">🧱 Criar pastas</td><td>Criar de uma vez uma estrutura de pastas digitada ou colada como texto.</td></tr>
+  </table>
+  <div class="tip">Você pode <b>arrastar</b> pastas e arquivos do Explorador do Windows para qualquer aba. Pressione <kbd>F1</kbd> para abrir este guia na seção da aba em que você está.</div>
+  <div class="tip">Nada muda no disco sem que você veja antes uma <b>prévia</b> e confirme, e tudo pode ser <b>desfeito</b>.</div>
+</section>
+
+<section id="pt-explorador">
+  <h2>📁 Explorador e exportar</h2>
+  <ol class="steps">
+    <li>Clique em <span class="ui">Procurar…</span> ou arraste uma pasta para a janela.</li>
+    <li>Ajuste as opções se precisar:
+      <ul>
+        <li><span class="ui">Profundidade</span>: quantos níveis de subpastas analisar (<code>0</code> = todos).</li>
+        <li><span class="ui">Mostrar arquivos</span>: desmarque para ver só pastas (os tamanhos ainda contam os arquivos).</li>
+        <li><span class="ui">Excluir</span>: nomes ou padrões a ignorar, separados por <code>;</code> — por exemplo <code>.git; node_modules</code>.</li>
+        <li><span class="ui">Somente arquivos</span>: mostra só alguns tipos, por exemplo <code>*.mkv; *.mp4</code>.</li>
+      </ul></li>
+    <li>Clique em <span class="ui">Analisar</span>. Você verá a árvore com o tamanho e o número de arquivos de cada pasta.</li>
+    <li>À direita, escolha o <span class="ui">Formato</span> e clique em <span class="ui">Copiar</span> ou <span class="ui">Salvar como…</span>.</li>
+  </ol>
+  <table>
+    <tr><th>Formato</th><th>Ideal para</th></tr>
+    <tr><td>Texto (árvore)</td><td>Colar num chat, e-mail ou documento. Fica assim:<pre>Minha Série/
+├── Temporada 1/
+│   └── Ep01.mkv
+└── Temporada 2/</pre></td></tr>
+    <tr><td>Markdown</td><td>GitHub, Notion, Obsidian, fóruns.</td></tr>
+    <tr><td>JSON</td><td>Outros programas ou scripts.</td></tr>
+    <tr><td>HTML</td><td>Uma página para abrir no navegador, com pastas recolhíveis.</td></tr>
+    <tr><td>Excel (.xlsx)</td><td>Uma linha por item, com tamanho, data e filtros.</td></tr>
+    <tr><td>Word (.docx)</td><td>Um documento com a árvore, pronto para imprimir.</td></tr>
+  </table>
+  <p>Opções de exportação: <span class="ui">Níveis</span>, <span class="ui">Arquivos</span>, <span class="ui">Tamanhos</span>, <span class="ui">Datas</span> e <span class="ui">Totais por pasta</span>. Excel e Word só podem ser salvos (não copiados).</p>
+  <div class="tip">Só precisa de uma parte? <b>Selecione uma subpasta na árvore</b>: só ela é exportada.</div>
+  <h3>Botões abaixo da árvore</h3>
+  <ul>
+    <li><span class="ui">Renomear arquivos desta pasta</span>: envia-os para a aba Renomear.</li>
+    <li><span class="ui">Parear legendas aqui</span>: abre a aba Legendas com essa pasta.</li>
+    <li><span class="ui">Usar como modelo</span>: copia as pastas (sem arquivos) para Criar pastas, para repetir a estrutura em outro lugar.</li>
+    <li><span class="ui">Abrir no Explorador</span>: mostra o item no Explorador do Windows.</li>
+  </ul>
+</section>
+
+<section id="pt-renombrar">
+  <h2>✏️ Renomear</h2>
+  <ol class="steps">
+    <li><b>Adicione os arquivos</b>: <span class="ui">Adicionar arquivos…</span>, <span class="ui">Adicionar pasta…</span> ou arraste-os para a lista. Ao adicionar pastas você pode <span class="ui">Incluir subpastas</span>, <span class="ui">Adicionar também as pastas</span> (para renomear as próprias pastas) e usar um <span class="ui">Filtro</span> como <code>*.mkv</code>.</li>
+    <li><b>Ordene a lista</b>. A ordem define a numeração. <span class="ui">Ordenar A→Z</span> usa ordem natural (<code>Ep2</code> antes de <code>Ep10</code>); com <span class="ui">▲ ▼</span> você move os selecionados.</li>
+    <li><b>Adicione regras</b> com <span class="ui">➕ Adicionar regra</span> e configure-as abaixo. Elas se aplicam em ordem, de cima para baixo; desmarque uma para desativá-la sem apagá-la.</li>
+    <li><b>Confira a prévia</b>. Cada linha mostra o nome atual e o novo:
+      <p><span class="chip ok">✔ muda</span> <span class="chip wa">⚠ aviso</span> <span class="chip er">✖ erro: não é renomeado</span> <span class="chip un">= sem mudanças</span></p>
+      Passe o mouse sobre uma linha para ver o motivo de um aviso ou erro.</li>
+    <li>Clique em <span class="ui">Renomear</span> e confirme.</li>
+  </ol>
+  <h3>Legendas que acompanham o vídeo</h3>
+  <p>Com <span class="ui">Renomear também as legendas de cada vídeo</span> marcado, as legendas da mesma pasta com o mesmo nome do vídeo são renomeadas com ele, mantendo o idioma, mesmo que não estejam na lista:</p>
+  <div class="ex"><code>serie.e1.mkv · serie.e1.pt.srt · serie.e1.en.forced.ass</code><span>→</span><code>Ep01.mkv · Ep01.pt.srt · Ep01.en.forced.ass</code></div>
+  <p>A coluna <span class="ui">Legendas</span> mostra quantas acompanham cada vídeo.</p>
+  <div class="tip">Teclas: <kbd>Del</kbd> remove da lista os selecionados (não apaga arquivos).</div>
+</section>
+
+<section id="pt-reglas">
+  <h2>As regras, uma a uma</h2>
+  <table>
+    <tr><th>Regra</th><th>O que faz</th><th>Exemplo</th></tr>
+    <tr><td class="ui">Numerar</td><td>Coloca um número: substituindo o nome, no início ou no final. Escolha texto antes/depois, início, incremento e dígitos. <i>Reiniciar em cada pasta</i> serve para temporadas.</td><td><code>x.mkv</code> → <code>Minha Série - Ep01.mkv</code></td></tr>
+    <tr><td class="ui">Modelo de séries</td><td>Monta o nome com a temporada, o episódio e o título detectados. <a href="#pt-series">Detalhes</a>.</td><td><code>show.s01e05.mkv</code> → <code>Show - T01E05.mkv</code></td></tr>
+    <tr><td class="ui">Limpar nomes</td><td>Remove <code>[grupos]</code>, etiquetas de qualidade (<code>1080p</code>, <code>WEB-DL</code>, <code>x264</code>…), o grupo final <code>-XYZ</code> e converte pontos e <code>_</code> em espaços.</td><td><code>[G] Minha.Serie.S01E02.1080p-XYZ</code> → <code>Minha Serie S01E02</code></td></tr>
+    <tr><td class="ui">Substituir</td><td>Procura um texto e troca por outro. Opções: todas as ocorrências, diferenciar maiúsculas, expressão regular (com <code>$1</code>, <code>$2</code>…).</td><td><code>Minha.Serie</code> → <code>Minha Serie</code></td></tr>
+    <tr><td class="ui">Inserir</td><td>Adiciona texto no início, no final ou após N caracteres.</td><td><code>a.mkv</code> → <code>[HD] a.mkv</code></td></tr>
+    <tr><td class="ui">Remover</td><td>Remove os primeiros ou últimos N caracteres, um trecho, ou tudo entre dois delimitadores.</td><td><code>Série [1080p]</code> → <code>Série</code></td></tr>
+    <tr><td class="ui">Maiúsculas</td><td>Tipo Título, Tipo frase, minúsculas ou MAIÚSCULAS.</td><td><code>mINHA sÉRIE</code> → <code>Minha Série</code></td></tr>
+  </table>
+  <p>Quase todas as regras têm <span class="ui">Aplicar a</span>: somente o nome (o normal), somente a extensão ou ambos. Por exemplo, substituir <code>MKV</code> por <code>mkv</code> aplicado à extensão.</p>
+  <div class="tip">Combine regras: primeiro <b>Limpar nomes</b>, depois <b>Modelo de séries</b> e, se quiser, <b>Maiúsculas → Tipo Título</b>.</div>
+</section>
+
+<section id="pt-series">
+  <h2>Modelo de séries</h2>
+  <p>Digite o modelo (ou escolha um exemplo da lista) com estes marcadores:</p>
+  <table>
+    <tr><th>Marcador</th><th>É substituído por</th></tr>
+    <tr><td><code>{serie}</code></td><td>O nome da série: o que você digitar em <span class="ui">Série</span> ou, se ficar vazio, o que vem antes do episódio no nome, ou a pasta da série.</td></tr>
+    <tr><td><code>{temp}</code></td><td>A temporada.</td></tr>
+    <tr><td><code>{ep}</code></td><td>O número do episódio.</td></tr>
+    <tr><td><code>{titulo}</code></td><td>O título do episódio (o que vem depois do número, já limpo).</td></tr>
+    <tr><td><code>{n}</code></td><td>A posição na lista (1, 2, 3…).</td></tr>
+    <tr><td><code>{nome}</code></td><td>O nome atual completo.</td></tr>
+  </table>
+  <p>Adicione <code>:00</code> para preencher com zeros: <code>{ep:00}</code> → <code>05</code>, <code>{ep:000}</code> → <code>005</code>.</p>
+  <h3>O que é detectado</h3>
+  <p>Episódios escritos como <code>S01E05</code>, <code>1x05</code>, <code>Ep 5</code>, <code>Episódio 05</code>, <code>E05</code> ou <code>Série - 05</code>. Se a temporada não estiver no nome, ela vem da pasta (<code>Temporada 2</code>, <code>Season 02</code>, <code>S2</code>) ou do campo <span class="ui">Temporada</span>.</p>
+  <div class="ex"><code>breaking.bad.s01e05.gray.matter.720p.mkv</code><span>→</span><code>breaking bad - T01E05 - gray matter.mkv</code></div>
+  <div class="ex"><code>Minha Série/Temporada 3/Episódio 4.mkv</code><span>→</span><code>Minha Série - T03E04.mkv</code></div>
+  <div class="tip warn">Se o episódio não for encontrado num nome, essa linha fica vermelha e não é alterada.</div>
+</section>
+
+<section id="pt-presets">
+  <h2>Presets</h2>
+  <p>Um preset é uma combinação de regras salva com um nome, para reutilizar com um clique.</p>
+  <ul>
+    <li><b>Usar</b>: escolha um na lista <span class="ui">Preset</span> e clique em <span class="ui">Carregar</span> (substitui as regras atuais).</li>
+    <li><b>Salvar</b>: monte suas regras e em <span class="ui">⋯</span> escolha <span class="ui">Salvar as regras atuais como preset…</span>.</li>
+    <li><b>Compartilhar</b>: <span class="ui">⋯ → Exportar preset para um arquivo…</span> cria um <code>.json</code> que outra pessoa pode abrir com <span class="ui">Importar preset de um arquivo…</span>.</li>
+  </ul>
+  <p>Vêm três de exemplo: <i>Série: limpar + T01E01</i>, <i>Limpar nomes baixados</i> e <i>Numerar episódios</i>.</p>
+</section>
+
+<section id="pt-subtitulos">
+  <h2>💬 Legendas</h2>
+  <p>Os players (VLC, MPC-HC, PotPlayer, Plex, Kodi…) carregam sozinhos a legenda com o mesmo nome do vídeo: <code>Ep01.mkv</code> → <code>Ep01.srt</code> ou <code>Ep01.pt.srt</code>. Esta aba faz isso mesmo que agora os nomes sejam diferentes.</p>
+  <ol class="steps">
+    <li>Escolha (ou arraste) a pasta da série e clique em <span class="ui">Analisar</span>.</li>
+    <li>Escolha como <span class="ui">Parear</span>: <b>por número do episódio</b> (recomendado) ou <b>por ordem alfabética</b> em cada pasta (útil quando os nomes não têm número; cada idioma é pareado separadamente).</li>
+    <li>Opções: <span class="ui">Manter idioma</span> (<code>.pt</code>, <code>.en</code>, <code>.forced</code>…), <span class="ui">Idioma se não tiver</span> (por exemplo <code>pt</code> → <code>Ep01.pt.srt</code>) e <span class="ui">Tirar de «Subs»</span> para colocá-las junto ao vídeo.</li>
+    <li>Confira a tabela; desmarque as que não quiser alterar.</li>
+    <li>Clique em <span class="ui">Renomear legendas</span>.</li>
+  </ol>
+  <div class="ex"><code>Legendas/serie.s01e01.portugues.srt</code><span>→</span><code>Minha Série - Ep01.portugues.srt</code></div>
+</section>
+
+<section id="pt-crear">
+  <h2>🧱 Criar pastas</h2>
+  <p>Cria uma estrutura de pastas completa a partir de texto. Aceita a árvore que o GestionCarp exporta, listas com recuo (espaços ou tabulações), listas de Markdown e JSON.</p>
+  <ol class="steps">
+    <li>Digite ou cole a estrutura à esquerda (ou clique em <span class="ui">Exemplo</span>). Linhas que terminam em <code>/</code> são pastas.</li>
+    <li>Escolha a pasta de destino em <span class="ui">Criar em</span>.</li>
+    <li>Confira a prévia: <span class="chip ok">＋ será criado</span> <span class="chip un">= já existe</span> <span class="chip er">✖ nome inválido</span>.</li>
+    <li>Clique em <span class="ui">Criar</span>.</li>
+  </ol>
+  <pre>Minha Série/
+├── Temporada 1/
+│   └── Legendas/
+├── Temporada 2/
+└── Extras/</pre>
+  <p>Os arquivos (linhas com extensão, como <code>notas.txt</code>) só são criados, vazios, se você marcar <span class="ui">Criar também os arquivos</span>.</p>
+  <div class="tip">Para copiar a estrutura de uma pasta que você já tem: analise-a na aba Explorador e clique em <span class="ui">Usar como modelo</span>.</div>
+</section>
+
+<section id="pt-deshacer">
+  <h2>↶ Desfazer e segurança</h2>
+  <ul>
+    <li>Antes de alterar qualquer coisa, verifica nomes que o Windows não aceita, duplicados, arquivos que já existem e caminhos longos demais.</li>
+    <li>Se algo falhar no meio de uma renomeação, tudo é revertido: nada fica pela metade.</li>
+    <li><span class="ui">↶ Desfazer</span> reverte a última operação (renomear, legendas ou criar pastas). Você pode clicar várias vezes; ele lembra as últimas 50, <b>mesmo depois de fechar o aplicativo</b>.</li>
+    <li>Ao desfazer uma criação de pastas, só é apagado o que continua vazio: o que você já colocou dentro é mantido.</li>
+  </ul>
+</section>
+
+<section id="pt-ajustes">
+  <h2>Idioma e atualizações</h2>
+  <ul>
+    <li><span class="ui">Idioma</span>: Español, English ou Português. A mudança é imediata e fica salva.</li>
+    <li><span class="ui">Ajuda → Procurar atualizações…</span>: compara sua versão com a última publicada; se houver uma nova, baixa, substitui o programa e o reinicia. Com <span class="ui">Procurar atualizações ao iniciar</span> ele verifica sozinho (sem avisos se estiver sem internet).</li>
+    <li><span class="ui">Ajuda → Sobre</span>: versão instalada, autor e licença.</li>
+    <li>A janela lembra o tamanho e a posição.</li>
+  </ul>
+</section>
+
+<section id="pt-faq">
+  <h2>Perguntas frequentes</h2>
+  <h3>Por que uma linha fica vermelha?</h3>
+  <p>Esse item não será renomeado. Passe o mouse para ver o motivo: nome duplicado, caractere não permitido (<code>\ / : * ? " &lt; &gt; |</code>), já existe outro arquivo com esse nome…</p>
+  <h3>Os números não saem na ordem que eu quero</h3>
+  <p>A numeração segue a ordem da lista. Clique em <span class="ui">Ordenar A→Z</span> ou mova as linhas com <span class="ui">▲ ▼</span>.</p>
+  <h3>O player não carrega a legenda</h3>
+  <p>A legenda deve estar na mesma pasta e ter exatamente o mesmo nome do vídeo (pode acrescentar o idioma: <code>.pt.srt</code>). Use a aba Legendas.</p>
+  <h3>Precisa de internet?</h3>
+  <p>Não. Só a procura de atualizações usa a internet. Este guia também funciona offline.</p>
+  <h3>Onde ficam os dados?</h3>
+  <p>Ajustes, presets e o histórico de desfazer ficam em <code>%LocalAppData%\GestionCarp</code>.</p>
+  <h3>O Windows diz «O Windows protegeu o computador»</h3>
+  <p>Acontece com programas sem assinatura digital. Clique em <span class="ui">Mais informações → Executar assim mesmo</span>.</p>
+</section>
+<footer>GestionCarp · © 2026 Raudel Camacho · Licença MIT</footer>
+</main>
+</div>
+</article>
+
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var lang = params.get("lang");
+  if (["es", "en", "pt"].indexOf(lang) < 0) {
+    var browser = (navigator.language || "es").slice(0, 2);
+    lang = ["es", "en", "pt"].indexOf(browser) >= 0 ? browser : "es";
+  }
+  document.documentElement.lang = lang;
+  var article = document.querySelector('article[lang="' + lang + '"]');
+  article.classList.add("on");
+  document.title = "GestionCarp · " + (lang === "en" ? "Guide" : lang === "pt" ? "Guia" : "Guía");
+  var section = params.get("s") || location.hash.replace(/^#..-/, "");
+  var target = section && document.getElementById(lang + "-" + section);
+  if (target) target.scrollIntoView();
+})();
+</script>
+</body>
+</html>

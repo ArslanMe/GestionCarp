@@ -47,6 +47,14 @@ public sealed class MainViewModel : ObservableObject
         CheckUpdatesCommand = new RelayCommand(() => _ = Updater.CheckAsync(silent: false));
         OpenGitHubCommand = new RelayCommand(() => AppInfo.OpenUrl(UpdateChecker.RepositoryUrl));
         AboutCommand = new RelayCommand(ShowAbout);
+        HelpCommand = new RelayCommand(() => HelpService.Open(SelectedTab switch
+        {
+            0 => "explorador",
+            1 => "renombrar",
+            2 => "subtitulos",
+            3 => "crear",
+            _ => "inicio",
+        }));
 
         Loc.Current.LanguageChanged += (_, _) =>
         {
@@ -70,6 +78,7 @@ public sealed class MainViewModel : ObservableObject
     public ICommand CheckUpdatesCommand { get; }
     public ICommand OpenGitHubCommand { get; }
     public ICommand AboutCommand { get; }
+    public ICommand HelpCommand { get; }
 
     public int SelectedTab { get => _selectedTab; set => SetProperty(ref _selectedTab, value); }
 
